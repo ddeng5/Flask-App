@@ -107,9 +107,11 @@ def addMovie():
 
 #delete movies
 @app.route('/submit', methods=['POST'])
-def addMovie():
+def deleteMovie():
     insertFunc = (
-        "DELETE FROM Movie where idMovie = movieID)"
+        "DELETE FROM Attend where Showing_idShowing IN (SELECT idShowing FROM Showing WHERE idMovie = movieID)"
+        "DELETE FROM Showing where idMovie = movieID"
+        "DELETE FROM Movie where idMovie = movieID"
     )
     data = (request.form['movieName'], request.form['movieID'], request.form['movieYear']) 
     cursor.execute(insertFunc, data)
@@ -117,6 +119,20 @@ def addMovie():
     cnx.close()
     return render_template('movieForm.html',request.form['movieName'], request.form['movieID'], request.form['movieYear'])
 
+#modify movies
+@app.route('/submit', methods=['POST'])
+def updateMovie():
+    insertFunc = (
+        "UPDATE Movie SET MovieName = movieName WHERE idMovie = MovieID" 
+        "UPDATE Movie SET MovieYEAR = movieYear WHERE idMovie = MovieID"
+    )
+    data = (request.form['movieName'], request.form['movieID'], request.form['movieYear']) 
+    cursor.execute(insertFunc, data)
+    cnx.commit()
+    cnx.close()
+    return render_template('movieForm.html',request.form['movieName'], request.form['movieID'], request.form['movieYear'])
+
+#list all movies and all attributes sorted alphabetically by movie name
 
 if __name__ == "__main__":
     app.run()
