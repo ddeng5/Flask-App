@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Star Movie Theatre</title>
+
+
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="http://getbootstrap.com/examples/jumbotron-narrow/jumbotron-narrow.css" rel="stylesheet">
+
+
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="header">
+            <nav>
+                <ul class="nav nav-pills pull-right">
+                    <li role="presentation" class="active"><a href="/customer">Customer</a>
+                    </li>
+                    <li role="presentation" class="active"><a href="/staff">Staff</a>
+                    </li>
+                </ul>
+            </nav>
+            <h3 class="text-muted">Star Movie Theatre</h3>
+        </div>
+
+        <div class="jumbotron">
+            <h1>Welcome to the Customer Homepage</h1>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                <h3>Search Showings: </h3>
+            </div>
+
+            <div class="row">
+                <h4>Select Genre</h4>
+            </div>
+
+<!-- Dropdown menu for selecting the genre -->
+            <div class="form-group">
+              <label for="selectedGenre">Select Genre:</label>
+
+                    <select class="form-control" id="selectedGenre">
+                      {% for each in genre %}
+                        <option><a href="#">{{each[0]}}</a></option>
+                      {% endfor %}
+                    </select>
+            </div>
+            <br/><br/>
+
+<!-- 2 dropdown menus for the dates -->
+            <div class="row">
+                <h4>Select Range of Dates</h4>
+            </div>
+
+            <div class="form-group">
+              <label for="selectStartDate">Start Date:</label>
+
+                <select class="form-control" id="selectStartDate">
+                  {% for each in date %}
+                    <option value="{{each[0]}}"><a href='#'>{{each[0]}}</a></option>
+                  {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+              <label for="selectStartDate">End Date:</label>
+
+                <select class="form-control" onclick="getStartDate()" name="endDate">
+                  {% for each in date %}
+
+                      <option><a href='#'>{{each[0]}}</a></option>
+
+                  {% endfor %}
+                </select>
+            </div>
+
+
+
+
+
+
+        </div>
+
+
+
+<!-- Let a customer attend a showing -->
+        <br/><br/><br/><br/>
+        <div class="container">
+          <div class="row">
+            <h3>Attend a Showing</h3>
+          </div>
+
+
+
+
+          <form class="form-inline" method="POST" action="{{ url_for('customerSearch') }}">
+
+            <div class="form-group">
+              <label for="selectedName">Select Name:</label>
+
+                    <select class="form-control" name="selectedName">
+                      {% for each in name %}
+                        <option><a href="#">{{each[0]}}</a></option>
+                      {% endfor %}
+                    </select>
+            </div>
+
+            <div class="form-group">
+              <label for="selectedShowing">Select Showing:</label>
+
+                    <select class="form-control" name="selectedShowing">
+                      {% for each in showing %}
+                        <option><a href="#">{{each[0]}}</a></option>
+                      {% endfor %}
+                    </select>
+            </div>
+              <button id="bookingSub" class="btn btn-default"><a href="/customer/selectShowing">Go</button>
+          </form>
+
+
+
+
+
+
+        </div>
+
+
+
+
+        <br/><br/><br/><br/><br/><br/>
+        <div class="footer">
+
+        </div>
+
+
+
+
+
+    </div>
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <script src="{{url_for('static', filename='script.js')}}"></script>
+</body>
+
+</html>
