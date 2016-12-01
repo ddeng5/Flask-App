@@ -18,14 +18,12 @@ mysql.init_app(app)
 def main():
     return render_template('index.html')
 
-
-
-
 @app.route('/customer', methods=['POST','GET'])
 def customerSearch():
 
 #query for genres
-    cursor = mysql.connect().cursor()
+    cnx = mysql.connector.connect()
+    cursor = cnx.cursor()
     cursor.execute("SELECT DISTINCT Genre FROM Genre")
     genres = cursor.fetchall()
 
@@ -94,7 +92,30 @@ def staffLogin():
     return render_template('staff.html')
 
 
+#add movies
+@app.route('/submit', methods=['POST'])
+def addMovie():
+    insertFunc = (
+        "INSERT INTO Movie (movieName, movieID, movieYear) "
+    "VALUES (%s, %s)"
+    )
+    data = (request.form['movieName'], request.form['movieID'], request.form['movieYear']) 
+    cursor.execute(insertFunc, data)
+    cnx.commit()
+    cnx.close()
+    return render_template('movieForm.html',request.form['movieName'], request.form['movieID'], request.form['movieYear'])
 
+#delete movies
+@app.route('/submit', methods=['POST'])
+def addMovie():
+    insertFunc = (
+        "DELETE FROM Movie where idMovie = movieID)"
+    )
+    data = (request.form['movieName'], request.form['movieID'], request.form['movieYear']) 
+    cursor.execute(insertFunc, data)
+    cnx.commit()
+    cnx.close()
+    return render_template('movieForm.html',request.form['movieName'], request.form['movieID'], request.form['movieYear'])
 
 
 if __name__ == "__main__":
