@@ -1,0 +1,193 @@
+ 
+
+CREATE DATABASE  IF NOT EXISTS `MovieTheatre` /*!40100 DEFAULT CHARACTER SET utf8 */;
+USE `MovieTheatre`;
+-- MySQL dump 10.13  Distrib 5.7.12, for Win64 (x86_64)
+--
+-- Host: localhost    Database: MovieTheatre
+-- ------------------------------------------------------
+-- Server version    5.5.53-0ubuntu0.14.04.1
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `Attend`
+--
+
+DROP TABLE IF EXISTS `Attend`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `Attend` (
+  `Customer_idCustomer` int(11) NOT NULL,
+  `Showing_idShowing` int(11) NOT NULL,
+  `Rating` tinyint(1) unsigned DEFAULT NULL,
+  PRIMARY KEY (`Customer_idCustomer`,`Showing_idShowing`),
+  KEY `fk_Customer_has_Showing_Showing1_idx` (`Showing_idShowing`),
+  KEY `fk_Customer_has_Showing_Customer_idx` (`Customer_idCustomer`),
+  CONSTRAINT `fk_Customer_has_Showing_Customer` FOREIGN KEY (`Customer_idCustomer`) REFERENCES `Customer` (`idCustomer`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Customer_has_Showing_Showing1` FOREIGN KEY (`Showing_idShowing`) REFERENCES `Showing` (`idShowing`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `Attend`
+--
+
+LOCK TABLES `Attend` WRITE;
+/*!40000 ALTER TABLE `Attend` DISABLE KEYS */;
+INSERT INTO `Attend` VALUES (1,7,5),(1,8,3),(1,13,1),(1,15,4),(12,8,4),(13,8,1),(14,8,2),(17,8,3),(17,19,5);
+/*!40000 ALTER TABLE `Attend` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `Customer`
+--
+
+DROP TABLE IF EXISTS `Customer`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `Customer` (
+  `idCustomer` int(11) NOT NULL AUTO_INCREMENT,
+  `FirstName` varchar(45) NOT NULL,
+  `LastName` varchar(45) NOT NULL,
+  `EmailAddress` varchar(45) DEFAULT NULL,
+  `Sex` varchar(1) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
+  PRIMARY KEY (`idCustomer`),
+  UNIQUE KEY `EmailAddress_UNIQUE` (`EmailAddress`)
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `Customer`
+--
+
+LOCK TABLES `Customer` WRITE;
+/*!40000 ALTER TABLE `Customer` DISABLE KEYS */;
+INSERT INTO `Customer` VALUES (1,'Will','Beldman','wbeldma@uwo.ca','M'),(12,'Bill','Clinton','billy@prez.com','M'),(13,'Hillary','Clinton','nextprezmaybe@prez.com','F'),(14,'Donald','Trump','nextprezalso@prez.com','M'),(15,'Gary','Johnson','nextpreztoo@prez.com','M'),(16,'Jill','Stein','nextprezaswell@prez.com','F'),(17,'Barack','Obama','lastprez@prez.com','M');
+/*!40000 ALTER TABLE `Customer` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `Genre`
+--
+
+DROP TABLE IF EXISTS `Genre`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `Genre` (
+  `Genre` varchar(45) NOT NULL,
+  `Movie_idMovie` int(11) NOT NULL,
+  PRIMARY KEY (`Movie_idMovie`,`Genre`),
+  CONSTRAINT `fk_Genre_Movie1` FOREIGN KEY (`Movie_idMovie`) REFERENCES `Movie` (`idMovie`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `Genre`
+--
+
+LOCK TABLES `Genre` WRITE;
+/*!40000 ALTER TABLE `Genre` DISABLE KEYS */;
+INSERT INTO `Genre` VALUES ('Action',1),('SciFi',1),('Animated',2),('Action',3),('Romance',4),('Action',5),('SciFi',5),('Action',6),('SciFi',6),('Drama',7),('Comedy',8),('Action',9),('Comedy',10),('Comedy',11),('Romance',11),('Action',12),('Comedy',12),('SciFi',12);
+/*!40000 ALTER TABLE `Genre` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `Movie`
+--
+
+DROP TABLE IF EXISTS `Movie`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `Movie` (
+  `idMovie` int(11) NOT NULL AUTO_INCREMENT,
+  `MovieName` varchar(45) NOT NULL,
+  `MovieYear` smallint(1) unsigned DEFAULT NULL,
+  PRIMARY KEY (`idMovie`)
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `Movie`
+--
+
+LOCK TABLES `Movie` WRITE;
+/*!40000 ALTER TABLE `Movie` DISABLE KEYS */;
+INSERT INTO `Movie` VALUES (1,'Star Wars',1977),(2,'Up',2009),(3,'Pulp Fiction',1994),(4,'Aloha',2015),(5,'The Martian',2015),(6,'The Empire Strikes Back',1980),(7,'Midnight In The Garden Of Good and Evil',1997),(8,'Tommy Boy',1995),(9,'Die Hard',1988),(10,'There\'s Something About Mary',1998),(11,'Two Weeks Notice',2002),(12,'Back To The Future',1985);
+/*!40000 ALTER TABLE `Movie` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `Showing`
+--
+
+DROP TABLE IF EXISTS `Showing`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `Showing` (
+  `idShowing` int(11) NOT NULL AUTO_INCREMENT,
+  `ShowingDateTime` datetime DEFAULT NULL,
+  `Movie_idMovie` int(11) NOT NULL,
+  `TheatreRoom_RoomNumber` int(10) unsigned NOT NULL,
+  `TicketPrice` float NOT NULL,
+  PRIMARY KEY (`idShowing`,`Movie_idMovie`,`TheatreRoom_RoomNumber`),
+  KEY `fk_Showing_Movie1_idx` (`Movie_idMovie`),
+  KEY `fk_Showing_TheatreRoom1_idx` (`TheatreRoom_RoomNumber`),
+  CONSTRAINT `fk_Showing_Movie1` FOREIGN KEY (`Movie_idMovie`) REFERENCES `Movie` (`idMovie`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Showing_TheatreRoom1` FOREIGN KEY (`TheatreRoom_RoomNumber`) REFERENCES `TheatreRoom` (`RoomNumber`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `Showing`
+--
+
+LOCK TABLES `Showing` WRITE;
+/*!40000 ALTER TABLE `Showing` DISABLE KEYS */;
+INSERT INTO `Showing` VALUES (7,'2016-02-11 21:30:00',1,1,5),(8,'2016-02-11 19:30:00',1,2,5),(9,'2016-02-11 19:00:00',2,3,2),(10,'2016-03-12 19:00:00',3,1,8),(11,'2016-03-12 21:00:00',4,1,8),(12,'2016-03-13 19:00:00',4,2,8),(13,'2016-03-20 19:00:00',4,1,4),(14,'2016-03-20 21:00:00',5,1,6),(15,'2016-03-22 20:30:00',8,2,4),(16,'2016-03-22 21:00:00',9,3,6),(17,'2016-03-20 19:00:00',10,2,8),(18,'2016-03-21 19:00:00',11,1,5),(19,'2016-03-23 22:00:00',11,1,3),(20,'2016-02-11 21:00:00',12,2,1);
+/*!40000 ALTER TABLE `Showing` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `TheatreRoom`
+--
+
+DROP TABLE IF EXISTS `TheatreRoom`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `TheatreRoom` (
+  `RoomNumber` int(10) unsigned NOT NULL,
+  `Capacity` smallint(1) unsigned NOT NULL,
+  PRIMARY KEY (`RoomNumber`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `TheatreRoom`
+--
+
+LOCK TABLES `TheatreRoom` WRITE;
+/*!40000 ALTER TABLE `TheatreRoom` DISABLE KEYS */;
+INSERT INTO `TheatreRoom` VALUES (1,30),(2,5),(3,100),(4,30),(5,6);
+/*!40000 ALTER TABLE `TheatreRoom` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2016-11-14  0:18:25
