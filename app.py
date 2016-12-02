@@ -60,10 +60,6 @@ def customerSearch():
     for i in showings:
         returnShowing.append(i)
 
-<<<<<<< HEAD
-=======
-
-
 
 
 
@@ -97,8 +93,6 @@ def buyTicket():
         returnShowing.append(i)
 
 
-
->>>>>>> dan
     selName = str(request.form.get('selectedName'))
     selShowing = str(request.form.get('selectedShowing'))
     temp = selShowing.split()
@@ -252,12 +246,6 @@ def grabHistory():
         success = cursor.execute('''SELECT Attend.Rating, Movie.MovieName FROM Movie INNER JOIN Showing ON Movie.idMovie=Showing.Movie_idMovie INNER JOIN Attend ON Showing.idShowing=Attend.Showing_idShowing WHERE Attend.Customer_idCustomer=%s ''', (finalCustomerID))
         data=cursor.fetchall()
 
-
-<<<<<<< HEAD
-    return render_template("customer.html", genre=returnGenre, date=returnDate, name=returnName, showing=returnShowing)
-=======
-
->>>>>>> dan
 
 
         if success == 0:
