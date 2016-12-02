@@ -28,25 +28,22 @@
         </div>
 
         <div class="jumbotron">
-            <h1>History</h1>
+            <h1>SQL Injection</h1>
         </div>
 
 
 
         <div class="container">
-          <form class="form-inline" method="POST" action="grabAll">
+          <form class="form-inline" method="POST" action="sqlInjected">
 
 
-            <div class="form-group">
-              <label for="attendName">Select Name:</label>
-
-                    <select class="form-control" name="attendName">
-                      {% for each in name %}
-                        <option><a href="#">{{each[0]}}</a></option>
-                      {% endfor %}
-                    </select>
+            <div class=form-group>
+              <p>
+                Type ' or 1=1 # (SQL Injection) here:
+              </p>
+              <input type="text" name="searchQuery">
             </div>
-
+          </br></br></br>
               <button id="history" class="btn btn-default">Find History</button>
 
 
@@ -78,7 +75,6 @@
                 {% endfor %}
               {% endif %}
             {% endwith %}
-
 
 
 

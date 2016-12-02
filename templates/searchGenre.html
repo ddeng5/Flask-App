@@ -28,35 +28,33 @@
         </div>
 
         <div class="jumbotron">
-            <h1>History</h1>
+            <h1>Search By Genre</h1>
         </div>
 
 
 
         <div class="container">
-          <form class="form-inline" method="POST" action="grabHistory">
 
+
+          <form class="form-inline" method="POST" action="searchedGenre">
 
             <div class="form-group">
-              <label for="attendName">Select Name:</label>
+              <label for="searchGenre">Select Genre:</label>
 
-                    <select class="form-control" name="attendName">
-                      {% for each in name %}
+                    <select class="form-control" name="searchGenre">
+                      {% for each in searchGenre %}
                         <option><a href="#">{{each[0]}}</a></option>
                       {% endfor %}
                     </select>
             </div>
 
-              <button id="history" class="btn btn-default">Find History</button>
 
-
-          </form>
-
+            <button id="searchGenre" class="btn btn-default">Search</button>
 
 
 
+            <br/><br/><br/>
             <div class="container">
-              <h2>Striped Rows</h2>
               <table class="table table-striped">
                 {% for row in data %}
                     <tr>
@@ -70,7 +68,24 @@
 
 
 
+              {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                  {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                      {{ message }}
+                    </div>
+                  {% endfor %}
+                {% endif %}
+              {% endwith %}
 
+
+
+
+
+
+
+          </form>
 
 
 

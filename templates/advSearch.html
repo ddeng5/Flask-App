@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Star Movie Theatre</title>
+
+
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="http://getbootstrap.com/examples/jumbotron-narrow/jumbotron-narrow.css" rel="stylesheet">
+
+
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="header">
+            <nav>
+                <ul class="nav nav-pills pull-right">
+                    <li role="presentation" class="active"><a href="/customer">Customer</a>
+                    </li>
+                    <li role="presentation" class="active"><a href="/staff">Staff</a>
+                    </li>
+                </ul>
+            </nav>
+            <h3 class="text-muted">Star Movie Theatre</h3>
+        </div>
+
+        <div class="jumbotron">
+            <h1>Search Home Page</h1>
+        </div>
+
+
+
+        <div class="container">
+          <form class="form-inline" method="POST" action="searched">
+
+            <!-- Search by genre -->
+            <div class="form-group">
+              <label for="searchGenre">Select Genre:</label>
+
+                    <select class="form-control" name="searchGenre">
+                      {% for each in searchGenre %}
+                        <option><a href="#">{{each[0]}}</a></option>
+                      {% endfor %}
+                    </select>
+
+                    <div class="checkbox">
+                      <label><input name="genreRequired" type="checkbox" value="no"> I don't need this search criteria.</label>
+                    </div>
+            </div>
+
+            <br/><br/>
+            <!-- Search by dates -->
+            <div class="form-group">
+              <label for="startDate">Select Start Date:</label>
+
+                    <select class="form-control" name="startDate">
+                      {% for each in date %}
+                        <option><a href="#">{{each[0]}}</a></option>
+                      {% endfor %}
+                    </select>
+
+                    <div class="checkbox">
+                      <label><input name="dateRequired" type="checkbox" value="no"> I don't need this search criteria.</label>
+                    </div>
+            </div>
+
+            <br/><br/>
+            <div class="form-group">
+              <label for="endDate">Select End Date:</label>
+
+                    <select class="form-control" name="endDate">
+                      {% for each in date %}
+                        <option><a href="#">{{each[0]}}</a></option>
+                      {% endfor %}
+                    </select>
+            </div>
+
+            <!-- Search by availability -->
+            <br/><br/></br>
+            <div class="checkbox">
+              <label><input name="seatRequired" type="checkbox" value="yes"> Only look for showings with available seats?</label>
+            </div>
+
+
+            <br/><br/></br></br>
+            <div class=form-group>
+              <p>
+                Type ' or 1=1 # (SQL Injection) here:
+              </p>
+              <input type="text" name="searchQuery">
+              <div class="checkbox">
+                <label><input name="searchRequired" type="checkbox" value="no"> I don't need this search criteria.</label>
+              </div>
+            </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+            <br/><br/><br/>
+            <div class="container">
+              <table class="table table-striped">
+                {% for row in data %}
+                    <tr>
+                    {% for d in row %}
+                        <td>{{ d }}</td>
+                    {% endfor %}
+                    </tr>
+                {% endfor %}
+              </table>
+            </div>
+
+
+              <br /><br />
+              <button id="bookingSub" class="btn btn-default">Search</button>
+
+
+              {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                  {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                      {{ message }}
+                    </div>
+                  {% endfor %}
+                {% endif %}
+              {% endwith %}
+          </form>
+        </div>
+
+
+
+
+
+
+
+
+
+        <br/><br/><br/><br/><br/><br/>
+        <div class="footer">
+          <button type="button" class="btn btn-default"><a href="{{ url_for('main') }}">Back to Main Menu</a></button>
+        </div>
+
+
+    </div>
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+</body>
+
+</html>

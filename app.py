@@ -229,7 +229,7 @@ def grabHistory():
     cursor.execute('''SELECT CONCAT_WS(" ", FirstName, LastName) AS wholename FROM Customer''')
     name = cursor.fetchall()
     returnName = []
-    print ("yay")
+
     for i in name:
         returnName.append(i)
 
@@ -300,7 +300,7 @@ def grabAll():
     cursor.execute('''SELECT CONCAT_WS(" ", FirstName, LastName) AS wholename FROM Customer''')
     name = cursor.fetchall()
     returnName = []
-    print ("yay")
+
     for i in name:
         returnName.append(i)
 
@@ -323,18 +323,293 @@ def grabAll():
 
         if success == 0:
             flash ("Sorry, we have no history of you.")
-            return render_template('history.html', name=returnName, data=data)
+            return render_template('profile.html', name=returnName, data=data)
         else:
             cxn.commit()
             flash("You have successfully viewed your history.")
-            return render_template('history.html', name=returnName, data=data)
+            return render_template('profile.html', name=returnName, data=data)
 
 #        except Exception as e:
 #            print (e)
 #            return render_template('history.html')
 
     else:
-        return render_template('history.html', name=returnName)
+        return render_template('profile.html', name=returnName)
+
+
+
+
+@app.route("/sqlInjection", methods=['POST','GET'])
+def sqlInjection():
+
+
+
+    return render_template("sqlInjection.html")
+
+
+
+
+@app.route("/sqlInjected", methods=['POST','GET'])
+def sqlInjected():
+
+    cxn = mysql.connect()
+    cursor = cxn.cursor()
+
+
+
+    if request.method=='POST':
+        attendName = str(request.form.get('searchQuery'))
+        print attendName
+
+        success = cursor.execute("SELECT idCustomer, FirstName, LastName, EmailAddress, Sex FROM Customer WHERE idCustomer= '%s'; " % attendName)
+        data=cursor.fetchall()
+
+
+
+        if success == 0:
+            flash ("Sorry, we have no history of you.")
+            return render_template('sqlInjection.html', data=data)
+        else:
+            cxn.commit()
+            flash("You have successfully viewed your history.")
+            return render_template('sqlInjection.html', data=data)
+
+#        except Exception as e:
+#            print (e)
+#            return render_template('history.html')
+
+    else:
+        return render_template('sqlInjection.html')
+
+
+
+
+
+@app.route("/search", methods=['POST','GET'])
+def search():
+    cxn = mysql.connect()
+    cursor = cxn.cursor()
+
+
+    #query for genre
+    cursor.execute('''SELECT DISTINCT Genre FROM Genre''')
+    genre = cursor.fetchall()
+    returnGenre = []
+
+    for i in genre:
+        returnGenre.append(i)
+
+
+    #query for range of show times
+    cursor.execute("SELECT DISTINCT ShowingDateTime FROM Showing ORDER BY ShowingDateTime ASC")
+    dates = cursor.fetchall()
+    returnDate = []
+    for i in dates:
+        returnDate.append(i)
+
+
+
+
+    return render_template("advSearch.html", searchGenre=returnGenre, date=returnDate)
+
+
+
+
+@app.route("/searched", methods=['POST','GET'])
+def searched():
+    cxn = mysql.connect()
+    cursor = cxn.cursor()
+
+
+    #query for genre
+    cursor.execute('''SELECT DISTINCT Genre FROM Genre''')
+    genre = cursor.fetchall()
+    returnGenre = []
+
+    for i in genre:
+        returnGenre.append(i)
+
+
+    #query for range of show times
+    cursor.execute("SELECT DISTINCT ShowingDateTime FROM Showing ORDER BY ShowingDateTime ASC")
+    dates = cursor.fetchall()
+    returnDate = []
+    for i in dates:
+        returnDate.append(i)
+
+
+
+
+
+    if request.method=='POST':
+        genre = str(request.form.get('searchGenre'))
+        startDate = str(request.form.get('startDate'))
+        endDate = str(request.form.get('endDate'))
+        searchQuery = str(request.form.get('searchQuery'))
+
+
+        genreRequired = str(request.form.get('genreRequired'))
+        dateRequired = str(request.form.get('dateRequired'))
+        searchRequired = str(request.form.get('searchRequired'))
+        seatRequired = str(request.form.get('seatRequired'))
+
+        print searchQuery
+
+
+
+        #massive compiled search
+        success = cursor.execute('''SELECT Movie.MovieName, Showing.ShowingDateTime FROM Movie INNER JOIN Showing ON Movie.idMovie=Showing.Movie_idMovie INNER JOIN Genre ON Showing.Movie_idMovie=Genre.Movie_idMovie WHERE Genre.Genre=%s AND Showing.ShowingDateTime>=%s AND Showing.ShowingDateTime<=%s AND Movie.MovieName=%s''', (genre, startDate, endDate, searchQuery))
+        data=cursor.fetchall()
+
+
+
+        if success == 0:
+            flash ("Sorry, no showings available.")
+            return render_template('advSearch.html', searchGenre=returnGenre, date=returnDate, data=data)
+        else:
+            cxn.commit()
+            flash("You have successfully searched by genre.")
+            return render_template('advSearch.html', searchGenre=returnGenre, date=returnDate, data=data)
+
+
+    else:
+        return render_template("advSearch.html", searchGenre=returnGenre, date=returnDate)
+
+
+
+
+
+
+
+
+@app.route("/searchGenre", methods=['POST','GET'])
+def searchGenre():
+    cxn = mysql.connect()
+    cursor = cxn.cursor()
+
+
+#query for genre
+    cursor.execute('''SELECT DISTINCT Genre FROM Genre''')
+    genre = cursor.fetchall()
+    returnGenre = []
+
+    for i in genre:
+        returnGenre.append(i)
+
+
+    return render_template("searchGenre.html", searchGenre=returnGenre)
+
+
+
+@app.route("/searchedGenre", methods=['POST','GET'])
+def searchedGenre():
+    cxn = mysql.connect()
+    cursor = cxn.cursor()
+
+
+#query for genre
+    cursor.execute('''SELECT DISTINCT Genre FROM Genre''')
+    genre = cursor.fetchall()
+    returnGenre = []
+
+    for i in genre:
+        returnGenre.append(i)
+
+
+    if request.method=='POST':
+        genre = str(request.form.get('searchGenre'))
+
+
+        success = cursor.execute('''SELECT Movie.MovieName, Showing.ShowingDateTime FROM Movie INNER JOIN Showing ON Movie.idMovie=Showing.Movie_idMovie INNER JOIN Genre ON Showing.Movie_idMovie=Genre.Movie_idMovie WHERE Genre.Genre=%s''', (genre))
+        data=cursor.fetchall()
+
+
+
+
+        if success == 0:
+            flash ("Sorry, no showings available.")
+            return render_template('searchGenre.html', searchGenre=returnGenre, data=data)
+        else:
+            cxn.commit()
+            flash("You have successfully searched by genre.")
+            return render_template('searchGenre.html', searchGenre=returnGenre, data=data)
+
+    else:
+        return render_template("searchGenre.html", searchGenre=returnGenre)
+
+
+
+@app.route("/searchDate", methods=['POST','GET'])
+def searchDate():
+    cxn = mysql.connect()
+    cursor = cxn.cursor()
+
+    #query for range of show times
+    cursor.execute("SELECT DISTINCT ShowingDateTime FROM Showing ORDER BY ShowingDateTime ASC")
+    dates = cursor.fetchall()
+    returnDate = []
+    for i in dates:
+        returnDate.append(i)
+
+
+    return render_template("searchDate.html", date=returnDate)
+
+
+
+@app.route("/searchedDate", methods=['POST','GET'])
+def searchedDate():
+    cxn = mysql.connect()
+    cursor = cxn.cursor()
+
+    #query for range of show times
+    cursor.execute("SELECT DISTINCT ShowingDateTime FROM Showing ORDER BY ShowingDateTime ASC")
+    dates = cursor.fetchall()
+    returnDate = []
+    for i in dates:
+        returnDate.append(i)
+
+    if request.method=='POST':
+        startDate = str(request.form.get('startDate'))
+        endDate = str(request.form.get('endDate'))
+
+        try:
+            success = cursor.execute('''SELECT Movie.MovieName, Showing.ShowingDateTime FROM Movie INNER JOIN Showing ON Movie.idMovie=Showing.Movie_idMovie WHERE Showing.ShowingDateTime>=%s AND Showing.ShowingDateTime<=%s''', (startDate,endDate))
+            data=cursor.fetchall()
+        except Exception as e:
+            flash ("Select a proper start date and end date.")
+            return render_template("searchDate.html", date=returnDate)
+
+
+
+        if success == 0:
+            flash ("Sorry, there are no showings available for those selected dates.")
+            return render_template('searchDate.html', date=returnDate, data=data)
+        else:
+            cxn.commit()
+            flash("You have successfully searched by dates.")
+            return render_template('searchDate.html', date=returnDate, data=data)
+
+
+
+    return render_template("searchDate.html", date=returnDate)
+
+
+
+
+
+@app.route("/searchSeat", methods=['POST','GET'])
+def searchSeat():
+    return render_template("searchSeat.html")
+
+
+
+@app.route("/searchTitle", methods=['POST','GET'])
+def searchTitle():
+    return render_template("searchTitle.html")
+
+
+
+
 
 
 
