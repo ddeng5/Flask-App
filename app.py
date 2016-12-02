@@ -173,7 +173,7 @@ def displayAttend_page():
 
 def addMovie():	
 
-    if (movieYear == '' && poster == ''):
+    if (movieYear == '' and poster == ''):
         insertFunc = (
             "INSERT INTO Movie (movieName, movieID)"
             "VALUES (%s, %s)"
@@ -184,7 +184,7 @@ def addMovie():
         cnx.close()
         return render_template('/staffComponents/movie/addMovieForm.html',request.form['movieName'], request.form['movieID'])
    
-    elif (movieYear == '' && poster != ''):
+    elif (movieYear == '' and poster != ''):
         insertFunc = (
             "INSERT INTO Movie (movieName, movieID, poster)"
             "VALUES (%s, %s, %s)"
@@ -195,7 +195,7 @@ def addMovie():
         cnx.close()
         return render_template('/staffComponents/movie/addMovieForm.html',request.form['movieName'], request.form['movieID'], request.form['poster'])
    
-    elif (movieYear != '' && poster == ''):
+    elif (movieYear != '' and poster == ''):
         insertFunc = (
             "INSERT INTO Movie (movieName, movieID, movieYear)"
             "VALUES (%s, %s, %s, %s)"
