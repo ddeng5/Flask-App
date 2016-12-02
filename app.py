@@ -7,7 +7,6 @@ from datetime import datetime
 from flaskext.mysql import MySQL
 app = Flask(__name__)
 
-
 mysql = MySQL()
 app = Flask(__name__)
 app.config['MYSQL_DATABASE_USER'] = 'root'
@@ -19,16 +18,14 @@ mysql.init_app(app)
 
 @app.route("/")
 def main():
-    cnx = mysql.connect()
-    cursor = cnx.cursor()
+    cxn = mysql.connect()
+    cursor = cxn.cursor()
     return render_template('index.html')
 
 @app.route('/customer', methods=['POST','GET'])
 def customerSearch():
 
 #query for genres
-    cxn = mysql.connect()
-    cursor = cxn.cursor()
     cursor.execute("SELECT DISTINCT Genre FROM Genre")
     genres = cursor.fetchall()
 
@@ -64,7 +61,6 @@ def customerSearch():
     selShowing = str(request.form.get('selectedShowing'))
     temp = selShowing.split()
 
-
     print selName
 
     if request.method == 'POST':
@@ -88,15 +84,8 @@ def customerSearch():
 
     return render_template("customer.html", genre=returnGenre, date=returnDate, name=returnName, showing=returnShowing)
 
-
-
-
-
-
-
 @app.route("/customer/selectShowing", methods=['POST','GET'])
 def selectShowing():
-
     cxn = mysql.connect()
     cursor = cxn.cursor()
     selName = str(request.form.get('selectedName'))
@@ -113,18 +102,65 @@ def selectShowing():
 
     return render_template("customer.html")
 
-
+#===============================[PAGE REFERENCES]=================================
 
 @app.route('/staff')
 def staffLogin():
     return render_template('staff.html')
 
-@app.route('/displaymovie_page')
-def displaymovie_page():
-    displayMovie()
-    return render_template('/staffComponents/displayMovie.html')
+@app.route('/movieForm')
+def movieForm():
+    return render_template('/staffComponents/movieForm.html')
 
+@app.route('/customerForm')
+def customerForm():
+    return render_template('/staffComponents/customerForm.html')
 
+@app.route('/roomForm')
+def roomForm():
+    return render_template('/staffComponents/roomForm.html')
+
+@app.route('/genreForm')
+def genreForm():
+    return render_template('/staffComponents/genreForm.html')
+
+@app.route('/showingForm')
+def showingForm():
+    return render_template('/staffComponents/showingForm.html')
+
+#===============================[DISPLAY PAGE REFERENCE]=================================
+
+@app.route('/displayMovie_page')
+def displayMovie():
+    display()
+    return render_template('/staffComponents/display.html')
+
+@app.route('/displayGenre_page')
+def displayGenre():
+    display()
+    return render_template('/staffComponents/display.html')
+
+@app.route('/displayRoom_page')
+def displayRoom():
+    display()
+    return render_template('/staffComponents/display.html')
+
+@app.route('/displayShowing_page')
+def displayShowing():
+    display()
+    return render_template('/staffComponents/display.html')
+
+@app.route('/displayCustomer_page')
+def displayCustomer():
+    display()
+    return render_template('/staffComponents/display.html')
+
+@app.route('/displayAttend_page')
+def displayAttend():
+    display()
+    return render_template('/staffComponents/display.html')
+
+#===============================[MOVIE]=================================
 
 #add movies
 @app.route('/addmovie', methods=['POST'])
@@ -142,15 +178,14 @@ def addMovie():
         return render_template('movieForm.html',request.form['movieName'], request.form['movieID'])
     else:
         insertFunc = (
-            "INSERT INTO Movie (movieName, movieID)"
-            "VALUES (%s, %s)"
+            "INSERT INTO Movie (movieName, movieID, movieYear)"
+            "VALUES (%s, %s, %s)"
         )
         data = (request.form['movieName'], request.form['movieID'], request.form['movieYear'])
         cursor.execute(insertFunc, data)
         cnx.commit()
         cnx.close()
         return render_template('movieForm.html',request.form['movieName'], request.form['movieID'], request.form['movieYear'])
-
 
 #delete movies
 @app.route('/deletemovie', methods=['POST'])
@@ -180,14 +215,14 @@ def updateMovie():
     return render_template('movieForm.html',request.form['movieName'], request.form['movieID'], request.form['movieYear'])
 
 #list all movies and all attributes sorted alphabetically by movie name
-@app.route('/displaymovie', methods=['POST','GET'])
-def displayMovie():
-    insertFunc = ("SELECT * FROM Movie order by MovieName")
-    cursor.execute(insertFunc)
-    result = cursor.fetchall()
-    cnx.close()
-    print result
-    return render_template('/staffComponents/displayMovie.html', data=result)
+@app.route('/displayMovie', methods=['POST','GET'])
+def display():
+	insertFunc = ("SELECT * FROM Movie order by MovieName")
+	cursor.execute(insertFunc)
+	result = cursor.fetchall()
+	cnx.close()
+	print result
+	return render_template('/staffComponents/display.html', data=result)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", debug=True)
