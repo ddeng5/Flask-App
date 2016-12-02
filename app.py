@@ -108,9 +108,9 @@ def selectShowing():
 def staffLogin():
     return render_template('staff.html')
 
-@app.route('/movieForm')
+@app.route('/addMovieForm')
 def movieForm():
-    return render_template('/staffComponents/movieForm.html')
+    return render_template('/staffComponents/addMovieForm.html')
 
 @app.route('/customerForm')
 def customerForm():
@@ -185,7 +185,7 @@ def addMovie():
         cursor.execute(insertFunc, data)
         cnx.commit()
         cnx.close()
-        return render_template('movieForm.html',request.form['movieName'], request.form['movieID'], request.form['movieYear'])
+        return render_template('addMovieForm.html',request.form['movieName'], request.form['movieID'], request.form['movieYear'])
 
 #delete movies
 @app.route('/deletemovie', methods=['POST'])
