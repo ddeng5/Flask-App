@@ -55,13 +55,6 @@ def customerSearch():
     returnShowing = []
     for i in showings:
         returnShowing.append(i)
-
-
-
-
-
-
-
     return render_template("customer.html", genre=returnGenre, date=returnDate, name=returnName, showing=returnShowing)
 
 
@@ -94,6 +87,7 @@ def staffLogin():
 
 @app.route('/displaymovie_page')
 def displaymovie_page():
+    displayMovie()
     return render_template('/staffComponents/displayMovie.html')
 
 
