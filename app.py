@@ -1,11 +1,8 @@
-<<<<<<< HEAD
 #!/usr/bin/env python
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 
-from flask import Flask, render_template, request, json, jsonify
-=======
 from flask import Flask, render_template, request, json, jsonify, flash, session
->>>>>>> dfb9e5e304bfcad60b34b5445e14b7447035c683
+
 from datetime import datetime
 from flaskext.mysql import MySQL
 app = Flask(__name__)
@@ -22,7 +19,7 @@ mysql.init_app(app)
 
 @app.route("/")
 def main():
-    cnx = mysql.connector.connect()
+    cnx = mysql.connect()
     cursor = cnx.cursor()
     return render_template('index.html')
 
@@ -132,13 +129,13 @@ def displaymovie_page():
 #add movies
 @app.route('/addmovie', methods=['POST'])
 def addMovie():
-    
+
     if (movieYear == ''):
         insertFunc = (
             "INSERT INTO Movie (movieName, movieID)"
             "VALUES (%s, %s)"
         )
-        data = (request.form['movieName'], request.form['movieID']) 
+        data = (request.form['movieName'], request.form['movieID'])
         cursor.execute(insertFunc, data)
         cnx.commit()
         cnx.close()
@@ -148,7 +145,7 @@ def addMovie():
             "INSERT INTO Movie (movieName, movieID)"
             "VALUES (%s, %s)"
         )
-        data = (request.form['movieName'], request.form['movieID'], request.form['movieYear']) 
+        data = (request.form['movieName'], request.form['movieID'], request.form['movieYear'])
         cursor.execute(insertFunc, data)
         cnx.commit()
         cnx.close()
@@ -163,7 +160,7 @@ def deleteMovie():
         "DELETE FROM Showing where idMovie = movieID"
         "DELETE FROM Movie where idMovie = movieID"
     )
-    data = (request.form['movieName'], request.form['movieID'], request.form['movieYear']) 
+    data = (request.form['movieName'], request.form['movieID'], request.form['movieYear'])
     cursor.execute(insertFunc, data)
     cnx.commit()
     cnx.close()
@@ -173,10 +170,10 @@ def deleteMovie():
 @app.route('/updatemovie', methods=['POST'])
 def updateMovie():
     insertFunc = (
-        "UPDATE Movie SET MovieName = movieName WHERE idMovie = MovieID" 
+        "UPDATE Movie SET MovieName = movieName WHERE idMovie = MovieID"
         "UPDATE Movie SET MovieYEAR = movieYear WHERE idMovie = MovieID"
     )
-    data = (request.form['movieName'], request.form['movieID'], request.form['movieYear']) 
+    data = (request.form['movieName'], request.form['movieID'], request.form['movieYear'])
     cursor.execute(insertFunc, data)
     cnx.commit()
     cnx.close()
