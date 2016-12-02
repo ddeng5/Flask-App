@@ -257,7 +257,76 @@ def grabHistory():
             return render_template('history.html', name=returnName, data=data)
         else:
             cxn.commit()
-            flash("You have successfully rated your showing.")
+            flash("You have successfully viewed your history.")
+            return render_template('history.html', name=returnName, data=data)
+
+#        except Exception as e:
+#            print (e)
+#            return render_template('history.html')
+
+    else:
+        return render_template('history.html', name=returnName)
+
+
+
+@app.route("/profile", methods=['POST','GET'])
+def profile():
+
+    cxn = mysql.connect()
+    cursor = cxn.cursor()
+
+
+#query for name
+    cursor.execute('''SELECT CONCAT_WS(" ", FirstName, LastName) AS wholename FROM Customer''')
+    name = cursor.fetchall()
+    returnName = []
+    for i in name:
+        returnName.append(i)
+
+
+    return render_template("profile.html", name=returnName)
+
+
+
+
+@app.route("/grabAll", methods=['POST','GET'])
+def grabAll():
+
+    cxn = mysql.connect()
+    cursor = cxn.cursor()
+
+
+#query for name
+    cursor.execute('''SELECT CONCAT_WS(" ", FirstName, LastName) AS wholename FROM Customer''')
+    name = cursor.fetchall()
+    returnName = []
+    print ("yay")
+    for i in name:
+        returnName.append(i)
+
+
+    if request.method=='POST':
+        attendName = str(request.form.get('attendName'))
+
+        firstName = attendName.split()
+
+
+        cursor.execute('''SELECT Customer.idCustomer FROM Customer WHERE Customer.FirstName=%s''', (firstName[0]))
+        customerId = cursor.fetchone()
+        finalCustomerID = int(customerId[0])
+
+
+        success = cursor.execute('''SELECT idCustomer, FirstName, LastName, EmailAddress, Sex FROM Customer WHERE idCustomer=%s ''', (finalCustomerID))
+        data=cursor.fetchall()
+
+
+
+        if success == 0:
+            flash ("Sorry, we have no history of you.")
+            return render_template('history.html', name=returnName, data=data)
+        else:
+            cxn.commit()
+            flash("You have successfully viewed your history.")
             return render_template('history.html', name=returnName, data=data)
 
 #        except Exception as e:
