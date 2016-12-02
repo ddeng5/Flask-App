@@ -18,8 +18,8 @@ mysql.init_app(app)
 
 @app.route("/")
 def main():
-    cxn = mysql.connect()
-    cursor = cxn.cursor()
+    #cxn = mysql.connect()
+    #cursor = cxn.cursor()
     return render_template('index.html')
 
 @app.route('/customer', methods=['POST','GET'])
@@ -109,8 +109,12 @@ def staffLogin():
     return render_template('staff.html')
 
 @app.route('/addMovieForm')
-def movieForm():
-    return render_template('/staffComponents/addMovieForm.html')
+def addMovieForm():
+    return render_template('/staffComponents/movie/addMovieForm.html')
+
+@app.route('/deleteMovieForm')
+def deleteMovieForm():
+    return render_template('/staffComponents/movie/deleteMovieForm.html')
 
 @app.route('/customerForm')
 def customerForm():
@@ -175,7 +179,7 @@ def addMovie():
         cursor.execute(insertFunc, data)
         cnx.commit()
         cnx.close()
-        return render_template('movieForm.html',request.form['movieName'], request.form['movieID'])
+        return render_template('/staffComponents/movie/addMovieForm.html',request.form['movieName'], request.form['movieID'])
     else:
         insertFunc = (
             "INSERT INTO Movie (movieName, movieID, movieYear)"
@@ -185,7 +189,7 @@ def addMovie():
         cursor.execute(insertFunc, data)
         cnx.commit()
         cnx.close()
-        return render_template('addMovieForm.html',request.form['movieName'], request.form['movieID'], request.form['movieYear'])
+        return render_template('/staffComponents/movie/addMovieForm.html',request.form['movieName'], request.form['movieID'], request.form['movieYear'])
 
 #delete movies
 @app.route('/deletemovie', methods=['POST'])
@@ -199,7 +203,7 @@ def deleteMovie():
     cursor.execute(insertFunc, data)
     cnx.commit()
     cnx.close()
-    return render_template('movieForm.html',request.form['movieName'], request.form['movieID'], request.form['movieYear'])
+    return render_template('/staffComponents/movie/deleteMovieForm.html',request.form['movieName'], request.form['movieID'], request.form['movieYear'])
 
 #modify movies
 @app.route('/updatemovie', methods=['POST'])
@@ -212,7 +216,7 @@ def updateMovie():
     cursor.execute(insertFunc, data)
     cnx.commit()
     cnx.close()
-    return render_template('movieForm.html',request.form['movieName'], request.form['movieID'], request.form['movieYear'])
+    return render_template('/staffComponents/movie/updateMovieForm.html',request.form['movieName'], request.form['movieID'], request.form['movieYear'])
 
 #list all movies and all attributes sorted alphabetically by movie name
 @app.route('/displayMovie', methods=['POST','GET'])
@@ -222,7 +226,7 @@ def display():
 	result = cursor.fetchall()
 	cnx.close()
 	print result
-	return render_template('/staffComponents/display.html', data=result)
+	return render_template('/staffComponents/movie/displayMovie.html', data=result)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", debug=True)
