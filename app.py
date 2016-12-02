@@ -60,12 +60,24 @@ def customerSearch():
         returnShowing.append(i)
 
 
+
+
+
+
+    return render_template("customer.html", genre=returnGenre, date=returnDate, name=returnName, showing=returnShowing)
+
+
+
+@app.route('/buyTicket', methods=['POST','GET'])
+def buyTicket():
+    cxn = mysql.connect()
+    cursor = cxn.cursor()
+
     selName = str(request.form.get('selectedName'))
     selShowing = str(request.form.get('selectedShowing'))
     temp = selShowing.split()
 
 
-    print selName
 
     if request.method == 'POST':
         firstName = selName.split()
@@ -86,9 +98,50 @@ def customerSearch():
         cxn.commit()
         flash(selName + " successfully booked the " + temp[2] + " showing at " + temp[1] + " on " + temp[0])
 
+        return render_template("buyTicket.html")
 
-    return render_template("customer.html", genre=returnGenre, date=returnDate, name=returnName, showing=returnShowing)
+@app.route('/rateMovie', methods=['POST','GET'])
+def rateMovie():
+    cxn = mysql.connect()
+    cursor = cxn.cursor()
 
+    if request.method=='POST':
+        attendName = str(request.form.get('attendName'))
+        attendShowing = str(request.form.get('attendShowing'))
+        temp = attendShowing.split()
+        rating = int(request.form.get('rating'))
+
+        try:
+            firstName = attendName.split()
+            dateTime = temp[0] + " " + temp[1]
+
+            cursor.execute('''SELECT Customer.idCustomer FROM Customer WHERE Customer.FirstName=%s ''', (firstName[0]))
+            customerId = cursor.fetchone()
+            finalCustomerID = int(customerId[0])
+
+            cursor.execute('''SELECT Showing.idShowing FROM Showing INNER JOIN Movie ON Showing.Movie_idMovie=Movie.idMovie WHERE Showing.ShowingDateTime=%s''', (dateTime))
+            movieId = cursor.fetchone()
+            finalMovieId = int(movieId[0])
+
+            print finalMovieId
+            print finalCustomerID
+            print rating
+
+
+            success = cursor.execute('''UPDATE Attend SET RATING=%s WHERE Customer_idCustomer=%s''', (rating,finalCustomerID))
+
+            if success == 0:
+                flash ("failed to update")
+                print ("failed")
+                return render_template('customer.html')
+            else:
+                cxn.commit()
+                return render_template('customer.html')
+
+        except Exception as e:
+            print ("Error")
+
+            return render_template('customer.html')
 
 
 
