@@ -18,8 +18,10 @@ mysql.init_app(app)
 
 @app.route("/")
 def main():
-    #cxn = mysql.connect()
-    #cursor = cxn.cursor()
+    cxn = mysql.connect()
+    cursor = cxn.cursor()
+    cursor.execute("ALTER TABLE Movie ADD poster BLOB")
+
     return render_template('index.html')
 
 @app.route('/customer', methods=['POST','GET'])
@@ -168,9 +170,10 @@ def displayAttend_page():
 
 #add movies
 @app.route('/addmovie', methods=['POST'])
-def addMovie():
 
-    if (movieYear == ''):
+def addMovie():	
+
+    if (movieYear == '' && poster == ''):
         insertFunc = (
             "INSERT INTO Movie (movieName, movieID)"
             "VALUES (%s, %s)"
@@ -180,10 +183,22 @@ def addMovie():
         cnx.commit()
         cnx.close()
         return render_template('/staffComponents/movie/addMovieForm.html',request.form['movieName'], request.form['movieID'])
-    else:
+   
+    elif (movieYear == '' && poster != ''):
+        insertFunc = (
+            "INSERT INTO Movie (movieName, movieID, poster)"
+            "VALUES (%s, %s, %s)"
+        )
+        data = (request.form['movieName'], request.form['movieID'], request.form['poster'])
+        cursor.execute(insertFunc, data)
+        cnx.commit()
+        cnx.close()
+        return render_template('/staffComponents/movie/addMovieForm.html',request.form['movieName'], request.form['movieID'], request.form['poster'])
+   
+    elif (movieYear != '' && poster == ''):
         insertFunc = (
             "INSERT INTO Movie (movieName, movieID, movieYear)"
-            "VALUES (%s, %s, %s)"
+            "VALUES (%s, %s, %s, %s)"
         )
         data = (request.form['movieName'], request.form['movieID'], request.form['movieYear'])
         cursor.execute(insertFunc, data)
@@ -191,6 +206,17 @@ def addMovie():
         cnx.close()
         return render_template('/staffComponents/movie/addMovieForm.html',request.form['movieName'], request.form['movieID'], request.form['movieYear'])
 
+    else:
+        insertFunc = (
+            "INSERT INTO Movie (movieName, movieID, movieYear, poster)"
+            "VALUES (%s, %s, %s, %s)"
+        )
+        data = (request.form['movieName'], request.form['movieID'], request.form['movieYear'], request.form['poster'])
+        cursor.execute(insertFunc, data)
+        cnx.commit()
+        cnx.close()
+        return render_template('/staffComponents/movie/addMovieForm.html',request.form['movieName'], request.form['movieID'], request.form['movieYear'], request.form['poster'])
+    
 #delete movies
 @app.route('/deletemovie', methods=['POST'])
 def deleteMovie():
