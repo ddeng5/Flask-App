@@ -131,32 +131,32 @@ def showingForm():
 #===============================[DISPLAY PAGE REFERENCE]=================================
 
 @app.route('/displayMovie_page')
-def displayMovie():
+def displayMovie_page():
     display()
     return render_template('/staffComponents/display.html')
 
 @app.route('/displayGenre_page')
-def displayGenre():
+def displayGenre_page():
     display()
     return render_template('/staffComponents/display.html')
 
 @app.route('/displayRoom_page')
-def displayRoom():
+def displayRoom_page():
     display()
     return render_template('/staffComponents/display.html')
 
 @app.route('/displayShowing_page')
-def displayShowing():
+def displayShowing_page():
     display()
     return render_template('/staffComponents/display.html')
 
 @app.route('/displayCustomer_page')
-def displayCustomer():
+def displayCustomer_page():
     display()
     return render_template('/staffComponents/display.html')
 
 @app.route('/displayAttend_page')
-def displayAttend():
+def displayAttend_page():
     display()
     return render_template('/staffComponents/display.html')
 
