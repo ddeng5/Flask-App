@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Star Movie Theatre</title>
+
+
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="http://getbootstrap.com/examples/jumbotron-narrow/jumbotron-narrow.css" rel="stylesheet">
+
+
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="header">
+            <nav>
+                <ul class="nav nav-pills pull-right">
+                    <li role="presentation" class="active"><a href="/customer">Customer</a>
+                    </li>
+                    <li role="presentation" class="active"><a href="/staff">Staff</a>
+                    </li>
+                </ul>
+            </nav>
+            <h3 class="text-muted">Star Movie Theatre</h3>
+        </div>
+
+        <div class="jumbotron">
+            <h1>Rate a Movie</h1>
+        </div>
+
+
+
+        <div class="container">
+
+
+          <form class="form-inline" method="POST" action="rateMovie">
+
+            <div class="form-group">
+              <label for="attendName">Select Name:</label>
+
+                    <select class="form-control" name="attendName">
+                      {% for each in name %}
+                        <option><a href="#">{{each[0]}}</a></option>
+                      {% endfor %}
+                    </select>
+            </div>
+
+            <div class="form-group">
+              <label for="attendShowing">Select Showing:</label>
+
+                    <select class="form-control" name="attendShowing">
+                      {% for each in showing %}
+                        <option><a href="#">{{each[0]}}</a></option>
+                      {% endfor %}
+                    </select>
+            </div>
+
+            <div class="form-group">
+              <label for="rating">Rating:</label>
+                <select class="form-control" name="rating">
+                  <option value="0">0</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                </select>
+              </div>
+
+
+              <br /><br />
+              <button id="bookingSub" class="btn btn-default">Rate</button>
+
+
+              {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                  {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                      {{ message }}
+                    </div>
+                  {% endfor %}
+                {% endif %}
+              {% endwith %}
+
+
+
+          </form>
+
+
+
+        </div>
+
+
+
+
+
+
+
+
+
+
+        <br/><br/><br/><br/>
+        <div class="footer">
+          <button type="button" class="btn btn-default"><a href="{{ url_for('main') }}">Back to Main Menu</a></button>
+        </div>
+
+
+    </div>
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+</body>
+
+</html>

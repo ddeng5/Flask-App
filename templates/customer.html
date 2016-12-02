@@ -31,6 +31,8 @@
             <h1>Welcome to the Customer Homepage</h1>
         </div>
 
+
+<!-- Search for a showing
         <div class="container">
             <div class="row">
                 <h3>Search Showings: </h3>
@@ -40,7 +42,8 @@
                 <h4>Select Genre</h4>
             </div>
 
-<!-- Dropdown menu for selecting the genre -->
+
+
             <div class="form-group">
               <label for="selectedGenre">Select Genre:</label>
 
@@ -52,7 +55,8 @@
             </div>
             <br/><br/>
 
-<!-- 2 dropdown menus for the dates -->
+
+
             <div class="row">
                 <h4>Select Range of Dates</h4>
             </div>
@@ -78,85 +82,40 @@
                   {% endfor %}
                 </select>
             </div>
+-->
 
 
+        <div class="btn-group-vertical" role="group" aria-label="...">
 
-
-
-
-        </div>
-
-
-
-<!-- Let a customer attend a showing -->
-        <br/><br/><br/><br/>
-        <div class="container">
-          <div class="row">
-            <h3>Attend a Showing</h3>
-          </div>
-
-
-
-
-          <form class="form-inline" method="POST" action="{{ url_for('customerSearch') }}">
-
-            <div class="form-group">
-              <label for="selectedName">Select Name:</label>
-
-                    <select class="form-control" name="selectedName">
-                      {% for each in name %}
-                        <option><a href="#">{{each[0]}}</a></option>
-                      {% endfor %}
-                    </select>
-            </div>
-
-            <div class="form-group">
-              <label for="selectedShowing">Select Showing:</label>
-
-                    <select class="form-control" name="selectedShowing">
-                      {% for each in showing %}
-                        <option><a href="#">{{each[0]}}</a></option>
-                      {% endfor %}
-                    </select>
-            </div>
-              <button id="bookingSub" class="btn btn-default">Go</button>
-              {% with messages = get_flashed_messages(with_categories=true) %}
-                <!-- Categories: success (green), info (blue), warning (yellow), danger (red) -->
-                {% if messages %}
-                  {% for category, message in messages %}
-                    <div class="alert alert-{{ category }} alert-dismissible" role="alert">
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <!-- <strong>Title</strong> --> {{ message }}
-                    </div>
-                  {% endfor %}
-                {% endif %}
-              {% endwith %}
-          </form>
-
-
-
-
+          <button type="button" class="btn btn-default"><a href="search">Search Showings</a></button>
+          <button type="button" class="btn btn-default"><a href="buyTicket">Buy A Ticket</a></button>
+          <button type="button" class="btn btn-default"><a href="rateMovie">Rate A Showing</a></button>
+          <button type="button" class="btn btn-default"><a href="history">History</a></button>
+          <button type="button" class="btn btn-default"><a href="profile">Profile</a></button>
+          <button type="button" class="btn btn-default"><a href="sqlInjection">SQL Injection of the Search Page</a></a></button>
 
 
         </div>
+
+
+
+
+
 
 
 
 
         <br/><br/><br/><br/><br/><br/>
         <div class="footer">
-
+          <button type="button" class="btn btn-default"><a href="{{ url_for('main') }}">Back to Main Menu</a></button>
         </div>
-
-
-
 
 
     </div>
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-    <script type=text/javascript src="{{url_for('static', filename='script.js') }}"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 </body>
 
 </html>
