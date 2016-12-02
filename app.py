@@ -4,7 +4,7 @@
 from flask import Flask, render_template, request, json, jsonify, flash, session
 
 from datetime import datetime
-from flaskext.mysql import MySQL
+from flask_mysqldb import MySQL
 app = Flask(__name__)
 
 mysql = MySQL()
@@ -21,7 +21,6 @@ def main():
     cxn = mysql.connect()
     cursor = cxn.cursor()
     cursor.execute("ALTER TABLE Movie ADD poster BLOB")
-
     return render_template('index.html')
 
 @app.route('/customer', methods=['POST','GET'])
