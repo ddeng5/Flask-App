@@ -31,7 +31,7 @@
             <h1>Welcome to the Customer Homepage</h1>
         </div>
 
-
+{% block mainContent %}
 <!-- Search for a showing -->
         <div class="container">
             <div class="row">
@@ -124,6 +124,7 @@
                     </select>
             </div>
               <button id="bookingSub" class="btn btn-default">Buy Now</button>
+{% endblock %}
               {% block content %}{% endblock %}
 <!--
 

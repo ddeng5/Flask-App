@@ -1,4 +1,9 @@
 {% extends "customer.html" %}
+{% block mainContent %}
+  {{ super() }}
+{% endblock %}
+
+
 {% block content %}
 {% with messages = get_flashed_messages(with_categories=true) %}
   {% if messages %}
