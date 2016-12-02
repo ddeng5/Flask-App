@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*- 
+
 from flask import Flask, render_template, request, json, jsonify
 from datetime import datetime
 from flaskext.mysql import MySQL
@@ -12,18 +15,16 @@ app.config['MYSQL_DATABASE_DB'] = 'MovieTheatre'
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 mysql.init_app(app)
 
-
-
 @app.route("/")
 def main():
+    cnx = mysql.connector.connect()
+    cursor = cnx.cursor()
     return render_template('index.html')
 
 @app.route('/customer', methods=['POST','GET'])
 def customerSearch():
 
 #query for genres
-    cnx = mysql.connector.connect()
-    cursor = cnx.cursor()
     cursor.execute("SELECT DISTINCT Genre FROM Genre")
     genres = cursor.fetchall()
 
@@ -91,22 +92,40 @@ def selectShowing():
 def staffLogin():
     return render_template('staff.html')
 
+@app.route('/displaymovie_page')
+def displaymovie_page():
+    return render_template('/staffComponents/displayMovie.html')
+
+
 
 #add movies
-@app.route('/submit', methods=['POST'])
+@app.route('/addmovie', methods=['POST'])
 def addMovie():
-    insertFunc = (
-        "INSERT INTO Movie (movieName, movieID, movieYear) "
-    "VALUES (%s, %s)"
-    )
-    data = (request.form['movieName'], request.form['movieID'], request.form['movieYear']) 
-    cursor.execute(insertFunc, data)
-    cnx.commit()
-    cnx.close()
-    return render_template('movieForm.html',request.form['movieName'], request.form['movieID'], request.form['movieYear'])
+    
+    if (movieYear == ''):
+        insertFunc = (
+            "INSERT INTO Movie (movieName, movieID)"
+            "VALUES (%s, %s)"
+        )
+        data = (request.form['movieName'], request.form['movieID']) 
+        cursor.execute(insertFunc, data)
+        cnx.commit()
+        cnx.close()
+        return render_template('movieForm.html',request.form['movieName'], request.form['movieID'])
+    else:
+        insertFunc = (
+            "INSERT INTO Movie (movieName, movieID)"
+            "VALUES (%s, %s)"
+        )
+        data = (request.form['movieName'], request.form['movieID'], request.form['movieYear']) 
+        cursor.execute(insertFunc, data)
+        cnx.commit()
+        cnx.close()
+        return render_template('movieForm.html',request.form['movieName'], request.form['movieID'], request.form['movieYear'])
+
 
 #delete movies
-@app.route('/submit', methods=['POST'])
+@app.route('/deletemovie', methods=['POST'])
 def deleteMovie():
     insertFunc = (
         "DELETE FROM Attend where Showing_idShowing IN (SELECT idShowing FROM Showing WHERE idMovie = movieID)"
@@ -120,7 +139,7 @@ def deleteMovie():
     return render_template('movieForm.html',request.form['movieName'], request.form['movieID'], request.form['movieYear'])
 
 #modify movies
-@app.route('/submit', methods=['POST'])
+@app.route('/updatemovie', methods=['POST'])
 def updateMovie():
     insertFunc = (
         "UPDATE Movie SET MovieName = movieName WHERE idMovie = MovieID" 
@@ -133,6 +152,14 @@ def updateMovie():
     return render_template('movieForm.html',request.form['movieName'], request.form['movieID'], request.form['movieYear'])
 
 #list all movies and all attributes sorted alphabetically by movie name
+@app.route('/displaymovie', methods=['POST','GET'])
+def displayMovie():
+    insertFunc = ("SELECT * FROM Movie order by MovieName")
+    cursor.execute(insertFunc)
+    result = cursor.fetchall()
+    cnx.close()
+    print result
+    return render_template('/staffComponents/displayMovie.html', data=result)
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host="0.0.0.0", debug=True)
