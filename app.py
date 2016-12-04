@@ -8,10 +8,12 @@ import base64
 import os
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'Secret String'
+
 
 @app.route("/")
 def main():
-    cnx = mysql.connector.connect(user='root', database='MovieTheatre')
+    cnx = mysql.connector.connect(user='root', database='MovieTheatre', host = 'localhost')
     cursor = cnx.cursor()
     try:
     	cursor.execute("ALTER TABLE Movie ADD poster BLOB")
@@ -24,7 +26,7 @@ def main():
 def customerSearch():
 
 #query for genres
-    cnx = mysql.connector.connect(user='root', database='MovieTheatre')
+    cnx = mysql.connector.connect(user='root', database='MovieTheatre', host = 'localhost')
     cursor = cnx.cursor()
     cursor.execute("SELECT DISTINCT Genre FROM Genre")
     genres = cursor.fetchall()
@@ -71,7 +73,7 @@ def attendShowing():
 
 @app.route('/buyTicket', methods=['POST','GET'])
 def buyTicket():
-    cxn = mysql.connector.connect(user='root', database='MovieTheatre')
+    cxn = mysql.connector.connect(user='root', database='MovieTheatre', host = 'localhost')
     cursor = cxn.cursor()
 
 #query for first and last name
@@ -130,7 +132,7 @@ def buyTicket():
 
 @app.route('/rateMovie', methods=['POST','GET'])
 def rateMovie():
-    cxn = mysql.connector.connect(user='root', database='MovieTheatre')
+    cxn = mysql.connector.connect(user='root', database='MovieTheatre', host = 'localhost')
     cursor = cxn.cursor()
 
 
@@ -194,7 +196,7 @@ def rateMovie():
 @app.route("/history", methods=['POST','GET'])
 def history():
 
-    cxn = mysql.connector.connect(user='root', database='MovieTheatre')
+    cxn = mysql.connector.connect(user='root', database='MovieTheatre', host = 'localhost')
     cursor = cxn.cursor()
 
 
@@ -206,6 +208,7 @@ def history():
         returnName.append(i)
 
 
+
     return render_template("history.html", name=returnName)
 
 
@@ -213,7 +216,7 @@ def history():
 @app.route("/grabHistory", methods=['POST','GET'])
 def grabHistory():
 
-    cxn = mysql.connector.connect(user='root', database='MovieTheatre')
+    cxn = mysql.connector.connect(user='root', database='MovieTheatre', host = 'localhost')
     cursor = cxn.cursor()
 
 
@@ -244,9 +247,11 @@ def grabHistory():
         cnx.commit()
         flash(selName + " successfully booked the " + temp[2] + " showing at " + temp[1] + " on " + temp[0])
 
+    cnx.close()        
+
 @app.route("/customer/selectShowing", methods=['POST','GET'])
 def selectShowing():
-    cnx = mysql.connector.connect(user='root', database='MovieTheatre')
+    cnx = mysql.connector.connect(user='root', database='MovieTheatre', host = 'localhost')
     cursor = cnx.cursor()
     selName = str(request.form.get('selectedName'))
     selShowing = str(request.form.get('selectedShowing'))
@@ -266,7 +271,7 @@ def selectShowing():
 @app.route("/profile", methods=['POST','GET'])
 def profile():
 
-    cxn = mysql.connector.connect(user='root', database='MovieTheatre')
+    cxn = mysql.connector.connect(user='root', database='MovieTheatre', host = 'localhost')
     cursor = cxn.cursor()
 
 
@@ -286,7 +291,7 @@ def profile():
 @app.route("/grabAll", methods=['POST','GET'])
 def grabAll():
 
-    cxn = mysql.connector.connect(user='root', database='MovieTheatre')
+    cxn = mysql.connector.connect(user='root', database='MovieTheatre', host = 'localhost')
     cursor = cxn.cursor()
 
 #query for name
@@ -345,7 +350,7 @@ def sqlInjection():
 @app.route("/sqlInjected", methods=['POST','GET'])
 def sqlInjected():
 
-    cxn = mysql.connector.connect(user='root', database='MovieTheatre')
+    cxn = mysql.connector.connect(user='root', database='MovieTheatre', host = 'localhost')
     cursor = cxn.cursor()
 
 
@@ -380,7 +385,7 @@ def sqlInjected():
 
 @app.route("/search", methods=['POST','GET'])
 def search():
-    cxn = mysql.connector.connect(user='root', database='MovieTheatre')
+    cxn = mysql.connector.connect(user='root', database='MovieTheatre', host = 'localhost')
     cursor = cxn.cursor()
 
 
@@ -410,7 +415,7 @@ def search():
 
 @app.route("/searched", methods=['POST','GET'])
 def searched():
-    cxn = mysql.connector.connect(user='root', database='MovieTheatre')
+    cxn = mysql.connector.connect(user='root', database='MovieTheatre', host = 'localhost')
     cursor = cxn.cursor()
 
 
@@ -448,7 +453,7 @@ def searched():
         print searchQuery
 
         cursor.execute("CREATE OR REPLACE VIEW avail AS SELECT Showing_idShowing, Count(*) AS count FROM Attend JOIN Showing ON Attend.Showing_idShowing = Showing.idShowing GROUP BY Showing_idShowing;")
-        cursor.execute("CREATE OR REPLACE VIEW avail2 AS SELECT idShowing, capacity FROM Showing JOIN theatreRoom ON Showing.TheatreRoom_RoomNumber = TheatreRoom.RoomNumber;")
+        cursor.execute("CREATE OR REPLACE VIEW avail2 AS SELECT idShowing, capacity FROM Showing JOIN TheatreRoom ON Showing.TheatreRoom_RoomNumber = TheatreRoom.RoomNumber;")
 
 
         baseSql = "SELECT Movie.MovieName, Showing.ShowingDateTime FROM Movie INNER JOIN Showing ON Movie.idMovie=Showing.Movie_idMovie INNER JOIN Genre ON Showing.Movie_idMovie=Genre.Movie_idMovie WHERE"
@@ -623,7 +628,7 @@ def displayAttend_page():
 @app.route('/addmovie', methods=['POST'])
 def addMovie():
 	#create connection
-	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
+	cnx = mysql.connector.connect(user='root', database='MovieTheatre', host = 'localhost')
 	cursor = cnx.cursor()
 	#query to be passed to the database
 	insertFunc = (
@@ -639,7 +644,7 @@ def addMovie():
 
 	#poster functions
 	#if(request.form['poster'] is not None):
-	#	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
+	#	cnx = mysql.connector.connect(user='root', database='MovieTheatre', host = 'localhost')
 	#	cursor = cnx.cursor()
 	#	posterUpload = ("UPDATE Movie SET poster = %s WHERE idMovie = %s"
 	#		)
@@ -656,7 +661,7 @@ def addMovie():
 @app.route('/deletemovie', methods=['POST'])
 def deleteMovie():
 	#open connection
-	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
+	cnx = mysql.connector.connect(user='root', database='MovieTheatre', host = 'localhost')
 	cursor = cnx.cursor()
 	data = (request.form['movieID'])
 	#delete query
@@ -672,7 +677,7 @@ def deleteMovie():
 @app.route('/updatemovie', methods=['POST'])
 def updateMovie():
 	#separate queries for the movie name and movie year
-	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
+	cnx = mysql.connector.connect(user='root', database='MovieTheatre', host = 'localhost')
 	cursor = cnx.cursor()
 	insertFunc = (
 		"UPDATE Movie SET MovieName = %s WHERE idMovie = %s"
@@ -682,7 +687,7 @@ def updateMovie():
 	cnx.commit()
 	cnx.close()
 
-	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
+	cnx = mysql.connector.connect(user='root', database='MovieTheatre', host = 'localhost')
 	cursor = cnx.cursor()
 	insertFunc = (
 		"UPDATE Movie SET MovieYear = %s WHERE idMovie = %s"
@@ -697,7 +702,7 @@ def updateMovie():
 #list all movies and all attributes sorted alphabetically by movie name
 @app.route('/displayMovie', methods=['POST','GET'])
 def displayMovie():
-	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
+	cnx = mysql.connector.connect(user='root', database='MovieTheatre', host = 'localhost')
 	cursor = cnx.cursor()
 	insertFunc = ("SELECT * FROM Movie order by MovieName")
 	cursor.execute(insertFunc)
@@ -720,7 +725,7 @@ def displayMovie():
 @app.route('/addgenre', methods=['POST'])
 def addGenre():
 	#open connection	
-	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
+	cnx = mysql.connector.connect(user='root', database='MovieTheatre', host = 'localhost')
 	cursor = cnx.cursor()
 	#MySQL query
 	insertFunc = (
@@ -737,7 +742,7 @@ def addGenre():
 #delete genre
 @app.route('/deletegenre', methods=['POST'])
 def deleteGenre():
-	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
+	cnx = mysql.connector.connect(user='root', database='MovieTheatre', host = 'localhost')
 	cursor = cnx.cursor()
 	insertFunc = (
 		"DELETE FROM Genre WHERE genre = %s and Movie_idMovie = %s"
@@ -751,7 +756,7 @@ def deleteGenre():
 #list all genres and movies
 @app.route('/displayGenre', methods=['POST','GET'])
 def displayGenre():
-	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
+	cnx = mysql.connector.connect(user='root', database='MovieTheatre', host = 'localhost')
 	cursor = cnx.cursor()
 	insertFunc = ("SELECT Genre, idMovie, MovieName FROM Genre JOIN Movie ON Movie.idMovie = Genre.Movie_idMovie ORDER BY Genre")
 	cursor.execute(insertFunc)
@@ -766,7 +771,7 @@ def displayGenre():
 @app.route('/addroom', methods=['POST'])
 def addRoom():
 	#open connection	
-	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
+	cnx = mysql.connector.connect(user='root', database='MovieTheatre', host = 'localhost')
 	cursor = cnx.cursor()
 	#query
 	insertFunc = (
@@ -784,7 +789,7 @@ def addRoom():
 @app.route('/deleteroom', methods=['POST'])
 def deleteRoom():
 	#open connection
-	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
+	cnx = mysql.connector.connect(user='root', database='MovieTheatre', host = 'localhost')
 	cursor = cnx.cursor()
 	#data
 	data = (request.form['roomNumber'])
@@ -801,7 +806,7 @@ def deleteRoom():
 @app.route('/updateroom', methods=['POST'])
 def updateRoom():
 	#open connection
-	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
+	cnx = mysql.connector.connect(user='root', database='MovieTheatre', host = 'localhost')
 	cursor = cnx.cursor()
 	#query
 	insertFunc = (
@@ -817,7 +822,7 @@ def updateRoom():
 #list all rooms and all attributes
 @app.route('/displayRoom', methods=['POST','GET'])
 def displayRoom():
-	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
+	cnx = mysql.connector.connect(user='root', database='MovieTheatre', host = 'localhost')
 	cursor = cnx.cursor()
 	insertFunc = ("SELECT * FROM TheatreRoom")
 	cursor.execute(insertFunc)
@@ -832,7 +837,7 @@ def displayRoom():
 @app.route('/addshowing', methods=['POST'])
 def addShowing():	
 	#open conneciton
-	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
+	cnx = mysql.connector.connect(user='root', database='MovieTheatre', host = 'localhost')
 	cursor = cnx.cursor()
 	#query
 	insertFunc = (
@@ -850,7 +855,7 @@ def addShowing():
 @app.route('/deleteshowing', methods=['POST'])
 def deleteShowing():
 	#open connection
-	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
+	cnx = mysql.connector.connect(user='root', database='MovieTheatre', host = 'localhost')
 	cursor = cnx.cursor()
 	#data
 	data = (request.form['showingID'])
@@ -867,7 +872,7 @@ def deleteShowing():
 @app.route('/updateshowing', methods=['POST'])
 def updateShowing():
 	#open connection
-	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
+	cnx = mysql.connector.connect(user='root', database='MovieTheatre', host = 'localhost')
 	cursor = cnx.cursor()
 	#query
 	insertFunc = (
@@ -884,7 +889,7 @@ def updateShowing():
 @app.route('/displayshowing', methods=['POST','GET'])
 def displayShowing():
 	#open connection
-	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
+	cnx = mysql.connector.connect(user='root', database='MovieTheatre', host = 'localhost')
 	cursor = cnx.cursor()
 	#query
 	insertFunc = ("SELECT * FROM Showing")
@@ -900,7 +905,7 @@ def displayShowing():
 @app.route('/addcustomer', methods=['POST'])
 def addCustomer():	
 	#open connection
-	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
+	cnx = mysql.connector.connect(user='root', database='MovieTheatre', host = 'localhost')
 	cursor = cnx.cursor()
 	#query
 	insertFunc = (
@@ -918,7 +923,7 @@ def addCustomer():
 @app.route('/deletecustomer', methods=['POST'])
 def deleteCustomer():
 	#open connection
-	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
+	cnx = mysql.connector.connect(user='root', database='MovieTheatre', host = 'localhost')
 	cursor = cnx.cursor()
 	#data
 	data = (request.form['customerID'])
@@ -935,7 +940,7 @@ def deleteCustomer():
 @app.route('/updatecustomer', methods=['POST'])
 def updateCustomer():
 	#open connection
-	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
+	cnx = mysql.connector.connect(user='root', database='MovieTheatre', host = 'localhost')
 	cursor = cnx.cursor()
 	#query
 	insertFunc = (
@@ -951,7 +956,7 @@ def updateCustomer():
 #list all customers and all attributes
 @app.route('/displaycustomer', methods=['POST','GET'])
 def displayCustomer():
-	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
+	cnx = mysql.connector.connect(user='root', database='MovieTheatre', host = 'localhost')
 	cursor = cnx.cursor()
 	insertFunc = ("SELECT * FROM Customer")
 	cursor.execute(insertFunc)
@@ -965,7 +970,7 @@ def displayCustomer():
 #list all attendances and all attributes sorted alphabetically by rating
 @app.route('/displayattend', methods=['POST','GET'])
 def displayAttend():
-	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
+	cnx = mysql.connector.connect(user='root', database='MovieTheatre', host = 'localhost')
 	cursor = cnx.cursor()
 	#joins customer, showing, movie, and returns the required columns
 	insertFunc = ("SELECT Rating, Customer_idCustomer, Showing_idShowing, FirstName, LastName, ShowingDateTime, MovieName, idMovie FROM Attend JOIN Customer ON Attend.Customer_idCustomer = Customer.idCustomer JOIN Showing ON Attend.Showing_idShowing = Showing.idShowing JOIN Movie ON Showing.Movie_idMovie = Movie.idMovie ORDER BY Rating")
