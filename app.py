@@ -503,14 +503,14 @@ def displayCustomer():
 	cnx.close()
 	return result
 
-#===============================[CUSTOMER]=================================
+#===============================[ATTEND]=================================
 
 #list all movies and all attributes sorted alphabetically by movie name
 @app.route('/displayattend', methods=['POST','GET'])
 def displayAttend():
 	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
 	cursor = cnx.cursor()
-	insertFunc = ("SELECT * FROM Attend")
+	insertFunc = ("SELECT Rating, Customer_idCustomer, Showing_idShowing, FirstName, LastName, ShowingDateTime, MovieName, idMovie FROM Attend JOIN Customer ON Attend.Customer_idCustomer = Customer.idCustomer JOIN Showing ON Attend.Showing_idShowing = Showing.idShowing JOIN Movie ON Showing.Movie_idMovie = Movie.idMovie ORDER BY Rating")
 	cursor.execute(insertFunc)
 	result = cursor.fetchall()
 	cnx.close()

@@ -28,9 +28,14 @@
  			<table class="table">
  				<thead>
  					<tr>
- 						<th>Customer ID</th>
- 						<th>Showing ID</th>
                         <th>Rating</th>
+ 						<th>Customer ID</th>
+ 						<th>Showing ID</th>                        
+                        <th>Customer First Name</th>
+                        <th>Customer Last Name</th>
+                        <th>Showing Time</th>
+                        <th>Movie Name</th>
+                        <th>Movie ID</th>                                         
  					</tr>
  				</thead>
  				<tbody>
@@ -39,6 +44,11 @@
     					<td>{{ attend.0 }}</td>
     					<td>{{ attend.1 }}</td>
                         <td>{{ attend.2 }}</td>
+                        <td>{{ attend.3 }}</td>
+                        <td>{{ attend.4 }}</td>
+                        <td>{{ attend.5 }}</td>
+                        <td>{{ attend.6 }}</td>
+                        <td>{{ attend.7 }}</td>
     				</tr>
 				{% endfor %}
 				</tbody>
