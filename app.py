@@ -450,16 +450,16 @@ def searched():
 
         print searchQuery
 
+        cursor.execute("CREATE OR REPLACE VIEW avail AS SELECT Showing_idShowing, Count(*) AS count FROM Attend JOIN Showing ON Attend.Showing_idShowing = Showing.idShowing GROUP BY Showing_idShowing;")
+        cursor.execute("CREATE OR REPLACE VIEW avail2 AS SELECT idShowing, capacity FROM Showing JOIN theatreRoom ON Showing.TheatreRoom_RoomNumber = TheatreRoom.RoomNumber;")
+
 
         baseSql = "SELECT Movie.MovieName, Showing.ShowingDateTime FROM Movie INNER JOIN Showing ON Movie.idMovie=Showing.Movie_idMovie INNER JOIN Genre ON Showing.Movie_idMovie=Genre.Movie_idMovie WHERE"
         genreSql = "Genre.Genre=\'%s\'" % genre
         dateSql = "Showing.ShowingDateTime>=\'%s\' AND Showing.ShowingDateTime<=\'%s\'" % (startDate,endDate)
-
+        seatSql = "Showing.idShowing IN (SELECT idShowing FROM avail2 JOIN avail ON avail.Showing_idShowing = avail2.idShowing WHERE avail2.capacity > avail.count)"
         searchSQL = "Movie.MovieName=\'%s\'" % searchQuery
 
-
-        cursor.execute("CREATE VIEW avail AS SELECT Showing_idShowing, Count(*) AS count FROM Attend JOIN Showing ON Attend.Showing_idShowing = Showing.idShowing GROUP BY Showing_idShowing;")
-        cursor.execute("CREATE VIEW avail2 AS SELECT idShowing, capacity FROM Showing JOIN theatreRoom ON Showing.TheatreRoom_RoomNumber = TheatreRoom.RoomNumber;")
 
 
         if genreRequired<>"no":
@@ -468,7 +468,7 @@ def searched():
         if dateRequired<>"no":
             baseSql = baseSql + " AND " + dateSql
 
-        if seatRequired<>"no":
+        if seatRequired<>"yes":
             baseSql = baseSql + " AND " + seatSql
 
         if searchRequired<>"no":

@@ -36,6 +36,11 @@
         <div class="container">
           <form class="form-inline" method="POST" action="searched">
 
+            <h4>Select all Search Criteria that apply, must select a genre. If a search criteria is not required, please check the "I don't need this checkbox".</h4>
+
+            <br/>
+
+
             <!-- Search by genre -->
             <div class="form-group">
               <label for="searchGenre">Select Genre:</label>
@@ -46,9 +51,6 @@
                       {% endfor %}
                     </select>
 
-                    <div class="checkbox">
-                      <label><input name="genreRequired" type="checkbox" value="no"> I don't need this search criteria.</label>
-                    </div>
             </div>
 
             <br/><br/>
@@ -88,7 +90,7 @@
             <br/><br/></br></br>
             <div class=form-group>
               <p>
-                Type a movie title you would like to search for:
+                Type a movie title you would like to search for (warning:case sensitive):
               </p>
               <input type="text" name="searchQuery">
               <div class="checkbox">
