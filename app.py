@@ -4,23 +4,18 @@
 from flask import Flask, render_template, request, json, jsonify, flash, session
 
 from datetime import datetime
-from flask_mysqldb import MySQL
+import mysql.connector
 app = Flask(__name__)
-
-mysql = MySQL()
-app = Flask(__name__)
-app.config['MYSQL_DATABASE_USER'] = 'root'
-app.config['MYSQL_DATABASE_PASSWORD'] = ''
-app.config['MYSQL_DATABASE_DB'] = 'MovieTheatre'
-app.config['MYSQL_DATABASE_HOST'] = 'localhost'
-app.config['SECRET_KEY'] = 'Secret String'
-mysql.init_app(app)
 
 @app.route("/")
 def main():
-    cxn = mysql.connect()
-    cursor = cxn.cursor()
-    cursor.execute("ALTER TABLE Movie ADD poster BLOB")
+    cnx = mysql.connector.connect(user='root', database='MovieTheatre')
+    cursor = cnx.cursor()
+    try:
+    	cursor.execute("ALTER TABLE Movie ADD poster BLOB")
+    except Exception, e: 
+		print 'Poster column already exists'    	
+
     return render_template('index.html')
 
 @app.route('/customer', methods=['POST','GET'])
@@ -80,15 +75,15 @@ def customerSearch():
         print finalCustomerID
 
         cursor.execute("INSERT INTO Attend (Customer_idCustomer, Showing_idShowing) VALUES (%s, %s)", (finalCustomerID, finalMovieId))
-        cxn.commit()
+        cnx.commit()
         flash(selName + " successfully booked the " + temp[2] + " showing at " + temp[1] + " on " + temp[0])
 
     return render_template("customer.html", genre=returnGenre, date=returnDate, name=returnName, showing=returnShowing)
 
 @app.route("/customer/selectShowing", methods=['POST','GET'])
 def selectShowing():
-    cxn = mysql.connect()
-    cursor = cxn.cursor()
+    cnx = mysql.connector.connect()
+    cursor = cnx.cursor()
     selName = str(request.form.get('selectedName'))
     selShowing = str(request.form.get('selectedShowing'))
 
@@ -109,6 +104,8 @@ def selectShowing():
 def staffLogin():
     return render_template('staff.html')
 
+#=================================Movie============================================
+
 @app.route('/addMovieForm')
 def addMovieForm():
     return render_template('/staffComponents/movie/addMovieForm.html')
@@ -117,141 +114,408 @@ def addMovieForm():
 def deleteMovieForm():
     return render_template('/staffComponents/movie/deleteMovieForm.html')
 
-@app.route('/customerForm')
-def customerForm():
-    return render_template('/staffComponents/customerForm.html')
+@app.route('/updateMovieForm')
+def updateMovieForm():
+    return render_template('/staffComponents/movie/updateMovieForm.html')
 
-@app.route('/roomForm')
-def roomForm():
-    return render_template('/staffComponents/roomForm.html')
+#=================================Genre============================================
 
-@app.route('/genreForm')
-def genreForm():
-    return render_template('/staffComponents/genreForm.html')
+@app.route('/addGenreForm')
+def addGenreForm():
+    return render_template('/staffComponents/genre/addGenreForm.html')
 
-@app.route('/showingForm')
-def showingForm():
-    return render_template('/staffComponents/showingForm.html')
+@app.route('/deleteGenreForm')
+def deleteGenreForm():
+    return render_template('/staffComponents/genre/deleteGenreForm.html')
+
+@app.route('/updateGenreForm')
+def updateGenreForm():
+    return render_template('/staffComponents/genre/updateGenreForm.html')
+
+#=================================Room============================================
+
+@app.route('/addRoomForm')
+def addRoomForm():
+    return render_template('/staffComponents/room/addRoomForm.html')
+
+@app.route('/deleteRoomForm')
+def deleteRoomForm():
+    return render_template('/staffComponents/room/deleteRoomForm.html')
+
+@app.route('/updateRoomForm')
+def updateRoomForm():
+    return render_template('/staffComponents/room/updateRoomForm.html')
+
+#=================================Showing==========================================
+
+@app.route('/addShowingForm')
+def addShowingForm():
+    return render_template('/staffComponents/showing/addShowingForm.html')
+
+@app.route('/deleteShowingForm')
+def deleteShowingForm():
+    return render_template('/staffComponents/showing/deleteShowingForm.html')
+
+@app.route('/updateShowingForm')
+def updateShowingForm():
+    return render_template('/staffComponents/showing/updateShowingForm.html')
+
+#=================================Customer==========================================
+
+@app.route('/addCustomerForm')
+def addCustomerForm():
+    return render_template('/staffComponents/customer/addCustomerForm.html')
+
+@app.route('/deleteCustomerForm')
+def deleteCustomerForm():
+    return render_template('/staffComponents/customer/deleteCustomerForm.html')
+
+@app.route('/updateCustomerForm')
+def updateCustomerForm():
+    return render_template('/staffComponents/customer/updateCustomerForm.html')
 
 #===============================[DISPLAY PAGE REFERENCE]=================================
 
 @app.route('/displayMovie_page')
 def displayMovie_page():
-    display()
-    return render_template('/staffComponents/display.html')
+    result = displayMovie()
+    return render_template('/staffComponents/movie/displayMovie.html', data=result)
 
 @app.route('/displayGenre_page')
 def displayGenre_page():
-    display()
-    return render_template('/staffComponents/display.html')
+    result = displayGenre()
+    return render_template('/staffComponents/genre/displayGenre.html', data=result)
 
 @app.route('/displayRoom_page')
 def displayRoom_page():
-    display()
-    return render_template('/staffComponents/display.html')
+    result = displayRoom()
+    return render_template('/staffComponents/room/displayRoom.html', data=result)
 
 @app.route('/displayShowing_page')
 def displayShowing_page():
-    display()
-    return render_template('/staffComponents/display.html')
+    result = displayShowing()
+    return render_template('/staffComponents/showing/displayShowing.html', data=result)
 
 @app.route('/displayCustomer_page')
 def displayCustomer_page():
-    display()
-    return render_template('/staffComponents/display.html')
+    result = displayCustomer()
+    return render_template('/staffComponents/customer/displayCustomer.html', data=result)
 
 @app.route('/displayAttend_page')
 def displayAttend_page():
-    display()
-    return render_template('/staffComponents/display.html')
+    result = displayAttend()
+    return render_template('/staffComponents/attend/displayAttend.html', data=result)
 
 #===============================[MOVIE]=================================
 
 #add movies
 @app.route('/addmovie', methods=['POST'])
+#def read_file(filename):
+#	with open(filename, 'rb') as f:
+#		poster = f.read()
+#	return poster
 
 def addMovie():	
+	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
+	cursor = cnx.cursor()
+	insertFunc = (
+			"INSERT INTO Movie (MovieName, idMovie, movieYear)"
+			"VALUES (%s, %s, %s)"
+		)
+	data = (request.form['movieName'], request.form['movieID'], request.form['movieYear'])
+	cursor.execute(insertFunc, data)
+	cnx.commit()
+	cnx.close()
+	print request.form['poster']
 
-    if (movieYear == '' and poster == ''):
-        insertFunc = (
-            "INSERT INTO Movie (movieName, movieID)"
-            "VALUES (%s, %s)"
-        )
-        data = (request.form['movieName'], request.form['movieID'])
-        cursor.execute(insertFunc, data)
-        cnx.commit()
-        cnx.close()
-        return render_template('/staffComponents/movie/addMovieForm.html',request.form['movieName'], request.form['movieID'])
-   
-    elif (movieYear == '' and poster != ''):
-        insertFunc = (
-            "INSERT INTO Movie (movieName, movieID, poster)"
-            "VALUES (%s, %s, %s)"
-        )
-        data = (request.form['movieName'], request.form['movieID'], request.form['poster'])
-        cursor.execute(insertFunc, data)
-        cnx.commit()
-        cnx.close()
-        return render_template('/staffComponents/movie/addMovieForm.html',request.form['movieName'], request.form['movieID'], request.form['poster'])
-   
-    elif (movieYear != '' and poster == ''):
-        insertFunc = (
-            "INSERT INTO Movie (movieName, movieID, movieYear)"
-            "VALUES (%s, %s, %s, %s)"
-        )
-        data = (request.form['movieName'], request.form['movieID'], request.form['movieYear'])
-        cursor.execute(insertFunc, data)
-        cnx.commit()
-        cnx.close()
-        return render_template('/staffComponents/movie/addMovieForm.html',request.form['movieName'], request.form['movieID'], request.form['movieYear'])
-
-    else:
-        insertFunc = (
-            "INSERT INTO Movie (movieName, movieID, movieYear, poster)"
-            "VALUES (%s, %s, %s, %s)"
-        )
-        data = (request.form['movieName'], request.form['movieID'], request.form['movieYear'], request.form['poster'])
-        cursor.execute(insertFunc, data)
-        cnx.commit()
-        cnx.close()
-        return render_template('/staffComponents/movie/addMovieForm.html',request.form['movieName'], request.form['movieID'], request.form['movieYear'], request.form['poster'])
-    
+	#if(request.form['poster'] is not None):
+	#	posterUpload = ("UPDATE Movie SET poster = %s WHERE idMovie = request.form['movieID']"
+	#		)
+	#	posterimg = request.form['poster']
+	#	data = (read_file(posterimg), request.form['movieID'])
+	#	cursor.execute(insertFunc, data)
+	#	cnx.commit()
+	#	cnx.close()
+	return render_template('/staffComponents/movie/addMovieForm.html')
+        
 #delete movies
 @app.route('/deletemovie', methods=['POST'])
 def deleteMovie():
-    insertFunc = (
-        "DELETE FROM Attend where Showing_idShowing IN (SELECT idShowing FROM Showing WHERE idMovie = movieID)"
-        "DELETE FROM Showing where idMovie = movieID"
-        "DELETE FROM Movie where idMovie = movieID"
-    )
-    data = (request.form['movieName'], request.form['movieID'], request.form['movieYear'])
-    cursor.execute(insertFunc, data)
-    cnx.commit()
-    cnx.close()
-    return render_template('/staffComponents/movie/deleteMovieForm.html',request.form['movieName'], request.form['movieID'], request.form['movieYear'])
+	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
+	cursor = cnx.cursor()
+	data = (request.form['movieID'])
+	insertFunc = (
+		"DELETE FROM Movie WHERE idMovie = '%s'; "%data
+		)
+	cursor.execute(insertFunc, data)
+	cnx.commit()
+	cnx.close()
+	return render_template('/staffComponents/movie/deleteMovieForm.html')
 
 #modify movies
 @app.route('/updatemovie', methods=['POST'])
 def updateMovie():
-    insertFunc = (
-        "UPDATE Movie SET MovieName = movieName WHERE idMovie = MovieID"
-        "UPDATE Movie SET MovieYEAR = movieYear WHERE idMovie = MovieID"
-    )
-    data = (request.form['movieName'], request.form['movieID'], request.form['movieYear'])
-    cursor.execute(insertFunc, data)
-    cnx.commit()
-    cnx.close()
-    return render_template('/staffComponents/movie/updateMovieForm.html',request.form['movieName'], request.form['movieID'], request.form['movieYear'])
+	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
+	cursor = cnx.cursor()
+	insertFunc = (
+		"UPDATE Movie SET MovieName = %s WHERE idMovie = %s"
+	)
+	data = (request.form['movieName'], request.form['movieID'])
+	cursor.execute(insertFunc, data)
+	cnx.commit()
+	cnx.close()
+
+	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
+	cursor = cnx.cursor()
+	insertFunc = (
+		"UPDATE Movie SET MovieYear = %s WHERE idMovie = %s"
+	)
+	data = (request.form['movieYear'], request.form['movieID'])
+	cursor.execute(insertFunc, data)
+	cnx.commit()
+	cnx.close()	
+
+	return render_template('/staffComponents/movie/updateMovieForm.html')
 
 #list all movies and all attributes sorted alphabetically by movie name
 @app.route('/displayMovie', methods=['POST','GET'])
-def display():
+def displayMovie():
+	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
+	cursor = cnx.cursor()
 	insertFunc = ("SELECT * FROM Movie order by MovieName")
 	cursor.execute(insertFunc)
 	result = cursor.fetchall()
 	cnx.close()
-	print result
-	return render_template('/staffComponents/movie/displayMovie.html', data=result)
+	return result 
+
+#===============================[GENRE]=================================
+
+#add genre
+@app.route('/addgenre', methods=['POST'])
+#def read_file(filename):
+#	with open(filename, 'rb') as f:
+#		poster = f.read()
+#	return poster
+
+def addGenre():	
+	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
+	cursor = cnx.cursor()
+	insertFunc = (
+			"INSERT INTO Genre (Genre, Movie_idMovie)"
+			"VALUES (%s, %s)"
+		)
+	data = (request.form['genre'], request.form['movieID'])
+	cursor.execute(insertFunc, data)
+	cnx.commit()
+	cnx.close()
+	return render_template('/staffComponents/genre/addGenreForm.html')
+        
+#delete genre
+@app.route('/deletegenre', methods=['POST'])
+def deleteGenre():
+	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
+	cursor = cnx.cursor()
+	insertFunc = (
+		"DELETE FROM Genre WHERE genre = %s and Movie_idMovie = %s"
+		)
+	data = (request.form['genre'], request.form['movieID'])
+	cursor.execute(insertFunc, data)
+	cnx.commit()
+	cnx.close()
+	return render_template('/staffComponents/genre/deleteGenreForm.html')
+
+#list all genres and movies
+@app.route('/displayGenre', methods=['POST','GET'])
+def displayGenre():
+	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
+	cursor = cnx.cursor()
+	insertFunc = ("SELECT Genre, idMovie, MovieName FROM Genre JOIN Movie ON Movie.idMovie = Genre.Movie_idMovie ORDER BY Genre")
+	cursor.execute(insertFunc)
+	result = cursor.fetchall()
+	cnx.close()
+	return result
+
+#===============================[ROOM]=================================
+
+#add rooms
+@app.route('/addroom', methods=['POST'])
+def addRoom():	
+	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
+	cursor = cnx.cursor()
+	insertFunc = (
+			"INSERT INTO TheatreRoom (RoomNumber, Capacity)"
+			"VALUES (%s, %s)"
+		)
+	data = (request.form['roomNumber'], request.form['capacity'])
+	cursor.execute(insertFunc, data)
+	cnx.commit()
+	cnx.close()
+	return render_template('/staffComponents/room/addRoomForm.html')
+        
+#delete movies
+@app.route('/deleteroom', methods=['POST'])
+def deleteRoom():
+	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
+	cursor = cnx.cursor()
+	data = (request.form['roomNumber'])
+	insertFunc = (
+		"DELETE FROM TheatreRoom WHERE roomNumber = '%s'; "%data
+		)
+	cursor.execute(insertFunc, data)
+	cnx.commit()
+	cnx.close()
+	return render_template('/staffComponents/room/deleteRoomForm.html')
+
+#modify movies
+@app.route('/updateroom', methods=['POST'])
+def updateRoom():
+	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
+	cursor = cnx.cursor()
+	insertFunc = (
+		"UPDATE TheatreRoom SET Capacity = %s WHERE RoomNumber = %s"
+	)
+	data = (request.form['capacity'], request.form['roomNumber'])
+	cursor.execute(insertFunc, data)
+	cnx.commit()
+	cnx.close()
+	return render_template('/staffComponents/room/updateRoomForm.html')
+
+#list all movies and all attributes sorted alphabetically by movie name
+@app.route('/displayRoom', methods=['POST','GET'])
+def displayRoom():
+	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
+	cursor = cnx.cursor()
+	insertFunc = ("SELECT * FROM TheatreRoom")
+	cursor.execute(insertFunc)
+	result = cursor.fetchall()
+	cnx.close()
+	return result 
+
+#===============================[SHOWING]=================================
+
+#add showings
+@app.route('/addshowing', methods=['POST'])
+def addShowing():	
+	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
+	cursor = cnx.cursor()
+	insertFunc = (
+			"INSERT INTO Showing (idShowing, ShowingDateTime, Movie_idMovie,TheatreRoom_RoomNumber, TicketPrice)"
+			"VALUES (%s, %s, %s, %s, %s)"
+		)
+	data = (request.form['showingID'], request.form['showTime'], request.form['movieID'], request.form['roomNumber'], request.form['ticketPrice'])
+	cursor.execute(insertFunc, data)
+	cnx.commit()
+	cnx.close()
+	return render_template('/staffComponents/showing/addShowingForm.html')
+        
+#delete showings
+@app.route('/deleteshowing', methods=['POST'])
+def deleteShowing():
+	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
+	cursor = cnx.cursor()
+	data = (request.form['showingID'])
+	insertFunc = (
+		"DELETE FROM Showing WHERE idShowing = '%s'; "%data
+		)
+	cursor.execute(insertFunc, data)
+	cnx.commit()
+	cnx.close()
+	return render_template('/staffComponents/showing/deleteShowingForm.html')
+
+#modify showings
+@app.route('/updateshowing', methods=['POST'])
+def updateShowing():
+	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
+	cursor = cnx.cursor()
+	insertFunc = (
+		"UPDATE Showing SET ShowingDateTime = %s, Movie_idMovie = %s,TheatreRoom_RoomNumber = %s, TicketPrice = %s WHERE idShowing = %s"
+	)
+	data = (request.form['showTime'], request.form['movieID'], request.form['roomNumber'], request.form['ticketPrice'], request.form['showingID'])
+	cursor.execute(insertFunc, data)
+	cnx.commit()
+	cnx.close()
+	return render_template('/staffComponents/showing/updateShowingForm.html')
+
+#list all showings and all attributes sorted alphabetically by movie name
+@app.route('/displayshowing', methods=['POST','GET'])
+def displayShowing():
+	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
+	cursor = cnx.cursor()
+	insertFunc = ("SELECT * FROM Showing")
+	cursor.execute(insertFunc)
+	result = cursor.fetchall()
+	cnx.close()
+	return result 
+
+#===============================[CUSTOMER]=================================
+
+#add customers
+@app.route('/addcustomer', methods=['POST'])
+def addCustomer():	
+	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
+	cursor = cnx.cursor()
+	insertFunc = (
+			"INSERT INTO Customer (idCustomer, FirstName, LastName, EmailAddress, Sex)"
+			"VALUES (%s, %s, %s, %s, %s)"
+		)
+	data = (request.form['customerID'], request.form['fname'], request.form['lname'], request.form['email'], request.form['sex'])
+	cursor.execute(insertFunc, data)
+	cnx.commit()
+	cnx.close()
+	return render_template('/staffComponents/customer/addCustomerForm.html')
+        
+#delete movies
+@app.route('/deletecustomer', methods=['POST'])
+def deleteCustomer():
+	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
+	cursor = cnx.cursor()
+	data = (request.form['customerID'])
+	insertFunc = (
+		"DELETE FROM Customer WHERE idCustomer = '%s'; "%data
+		)
+	cursor.execute(insertFunc, data)
+	cnx.commit()
+	cnx.close()
+	return render_template('/staffComponents/customer/deleteCustomerForm.html')
+
+#modify movies
+@app.route('/updatecustomer', methods=['POST'])
+def updateCustomer():
+	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
+	cursor = cnx.cursor()
+	insertFunc = (
+		"UPDATE Customer SET FirstName = %s, LastName = %s, EmailAddress = %s, Sex = %s WHERE idCustomer = %s"
+	)
+	data = (request.form['fname'], request.form['lname'], request.form['email'], request.form['sex'], request.form['customerID'])
+	cursor.execute(insertFunc, data)
+	cnx.commit()
+	cnx.close()
+	return render_template('/staffComponents/customer/updateCustomerForm.html')
+
+#list all movies and all attributes sorted alphabetically by movie name
+@app.route('/displaycustomer', methods=['POST','GET'])
+def displayCustomer():
+	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
+	cursor = cnx.cursor()
+	insertFunc = ("SELECT * FROM Customer")
+	cursor.execute(insertFunc)
+	result = cursor.fetchall()
+	cnx.close()
+	return result
+
+#===============================[CUSTOMER]=================================
+
+#list all movies and all attributes sorted alphabetically by movie name
+@app.route('/displayattend', methods=['POST','GET'])
+def displayAttend():
+	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
+	cursor = cnx.cursor()
+	insertFunc = ("SELECT * FROM Attend")
+	cursor.execute(insertFunc)
+	result = cursor.fetchall()
+	cnx.close()
+	return result
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", debug=True)

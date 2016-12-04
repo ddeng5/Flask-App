@@ -1,24 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head >
-    <title>Delete Movie</title>
-    <link href="http://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="http://getbootstrap.com/examples/jumbotron-narrow/jumbotron-narrow.css" rel="stylesheet">
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<title>Display Movies</title>
+	<link href="http://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link href="http://getbootstrap.com/examples/jumbotron-narrow/jumbotron-narrow.css" rel="stylesheet">
 </head>
-<h1 style="margin-left:50px">Delete Movie</h1>
-<br>
-<form action="/deletemovie" method="post" style="margin-left:50px">
-	<div class="input-group"></span>
-  		<input type="text" class="form-control" placeholder="Movie Name" aria-describedby="basic-addon1" name="movieName">
+
+<body>
+
+	<div class="container">
+		<div class="header">
+			<nav>
+				<ul class="nav nav-pills pull-right">
+					<li role="presentation" class="active"><a href="/customer">Customer</a>
+					</li>
+					<li role="presentation" class="active"><a href="/staff">Staff</a>
+					</li>                    
+				</ul>
+			</nav>
+			<h3 class="text-muted">Star Movie Theatre</h3>
+		</div>
+		<h1 style="margin-left:50px">Delete Movie</h1>
+		<br>
+		<form action="/deletemovie" method="post" style="margin-left:50px">
+			
+			<div class="input-group"></span>
+				<input type="text" class="form-control" placeholder="Movie ID" aria-describedby="basic-addon1" name="movieID">
+			</div>
+
+			<br>
+			<input class="btn btn-default" type="submit" value="Submit">
+			<br>
+		</form>
 	</div>
-	<div class="input-group"></span>
-  		<input type="text" class="form-control" placeholder="Movie ID" aria-describedby="basic-addon1" name="movieID">
-	</div>
-	<div class="input-group"></span>
-  		<input type="text" class="form-control" placeholder="Movie Year" aria-describedby="basic-addon1" name="movieYear">
-	</div>
-	<br>
-	<input class="btn btn-default" type="submit" value="Submit">
-	<br>
-</form>
+</body>

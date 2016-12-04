@@ -33,8 +33,8 @@ CREATE TABLE `Attend` (
   PRIMARY KEY (`Customer_idCustomer`,`Showing_idShowing`),
   KEY `fk_Customer_has_Showing_Showing1_idx` (`Showing_idShowing`),
   KEY `fk_Customer_has_Showing_Customer_idx` (`Customer_idCustomer`),
-  CONSTRAINT `fk_Customer_has_Showing_Customer` FOREIGN KEY (`Customer_idCustomer`) REFERENCES `Customer` (`idCustomer`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_Customer_has_Showing_Showing1` FOREIGN KEY (`Showing_idShowing`) REFERENCES `Showing` (`idShowing`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `fk_Customer_has_Showing_Customer` FOREIGN KEY (`Customer_idCustomer`) REFERENCES `Customer` (`idCustomer`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_Customer_has_Showing_Showing1` FOREIGN KEY (`Showing_idShowing`) REFERENCES `Showing` (`idShowing`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -87,7 +87,7 @@ CREATE TABLE `Genre` (
   `Genre` varchar(45) NOT NULL,
   `Movie_idMovie` int(11) NOT NULL,
   PRIMARY KEY (`Movie_idMovie`,`Genre`),
-  CONSTRAINT `fk_Genre_Movie1` FOREIGN KEY (`Movie_idMovie`) REFERENCES `Movie` (`idMovie`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `fk_Genre_Movie1` FOREIGN KEY (`Movie_idMovie`) REFERENCES `Movie` (`idMovie`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -142,8 +142,8 @@ CREATE TABLE `Showing` (
   PRIMARY KEY (`idShowing`,`Movie_idMovie`,`TheatreRoom_RoomNumber`),
   KEY `fk_Showing_Movie1_idx` (`Movie_idMovie`),
   KEY `fk_Showing_TheatreRoom1_idx` (`TheatreRoom_RoomNumber`),
-  CONSTRAINT `fk_Showing_Movie1` FOREIGN KEY (`Movie_idMovie`) REFERENCES `Movie` (`idMovie`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_Showing_TheatreRoom1` FOREIGN KEY (`TheatreRoom_RoomNumber`) REFERENCES `TheatreRoom` (`RoomNumber`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `fk_Showing_Movie1` FOREIGN KEY (`Movie_idMovie`) REFERENCES `Movie` (`idMovie`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_Showing_TheatreRoom1` FOREIGN KEY (`TheatreRoom_RoomNumber`) REFERENCES `TheatreRoom` (`RoomNumber`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
