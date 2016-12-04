@@ -8,8 +8,11 @@ import base64
 import os
 
 app = Flask(__name__)
+app.config['MYSQL_DATABASE_USER'] = 'root'
+app.config['MYSQL_DATABASE_PASSWORD'] = ''
+app.config['MYSQL_DATABASE_DB'] = 'MovieTheatre'
+app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 app.config['SECRET_KEY'] = 'Secret String'
-
 
 @app.route("/")
 def main():
@@ -76,7 +79,7 @@ def buyTicket():
     cxn = mysql.connector.connect(user='root', database='MovieTheatre', host = 'localhost')
     cursor = cxn.cursor()
 
-#query for first and last name
+    #query for first and last name
     cursor.execute('''SELECT CONCAT_WS(" ", FirstName, LastName) AS wholename FROM Customer''')
     name = cursor.fetchall()
     returnName = []
@@ -84,45 +87,47 @@ def buyTicket():
         returnName.append(i)
 
 
-#query for showings
+    #query for showings
     cursor.execute('''SELECT CONCAT(Showing.ShowingDateTime,' ', Movie.MovieName) AS timeMovie FROM Showing INNER JOIN Movie ON Movie.idMovie=Showing.Movie_idMovie''')
     showings = cursor.fetchall()
     returnShowing = []
     for i in showings:
         returnShowing.append(i)
 
-
+    #get the customer selected values from the webpage
     selName = str(request.form.get('selectedName'))
     selShowing = str(request.form.get('selectedShowing'))
     temp = selShowing.split()
 
-    print selName
-
+    #if the customer is requesting to book a showing
     try:
         if request.method == 'POST':
+            #parse the full name to return just the first name to match with sql database/table
             firstName = selName.split()
             dateTime = temp[0] + " " + temp[1]
 
+            #get the customer id
             cursor.execute('''SELECT Customer.idCustomer FROM Customer WHERE Customer.FirstName=%s ''', (firstName[0]))
             customerId = cursor.fetchone()
             finalCustomerID = int(customerId[0])
 
+            #get the movie id
             cursor.execute('''SELECT Showing.idShowing FROM Showing INNER JOIN Movie ON Showing.Movie_idMovie=Movie.idMovie WHERE Showing.ShowingDateTime=%s''', (dateTime))
             movieId = cursor.fetchone()
             finalMovieId = int(movieId[0])
 
-            print finalMovieId
-            print finalCustomerID
-
+            #sql query to insert customer into the Attned table
             cursor.execute("INSERT INTO Attend (Customer_idCustomer, Showing_idShowing) VALUES (%s, %s)", (finalCustomerID, finalMovieId))
             cxn.commit()
             flash(selName + " successfully booked the " + temp[2] + " showing at " + temp[1] + " on " + temp[0])
 
+            #return the page with the submitted request
             return render_template("attendShowing.html", name=returnName, showing=returnShowing)
 
         else:
             return render_template("attendShowing.html", name=returnName, showing=returnShowing)
 
+    #catch any exceptions and return error message
     except Exception as e:
         flash(selName + " could not successfully book this showing")
         return render_template('attendShowing.html')
