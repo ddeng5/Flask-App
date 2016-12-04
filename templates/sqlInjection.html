@@ -32,7 +32,7 @@
         </div>
 
 
-
+<!-- This is where the customer can input into a text box their search selection and this is where our webpage is prone to a sql injection attack -->
         <div class="container">
           <form class="form-inline" method="POST" action="sqlInjected">
 
@@ -51,7 +51,7 @@
 
 
 
-
+<!-- Display all the returned data-->
             <div class="container">
               <table class="table table-striped">
                 {% for row in data %}
@@ -64,7 +64,7 @@
               </table>
             </div>
 
-
+<!-- Return any feedback messages -->
             {% with messages = get_flashed_messages(with_categories=true) %}
               {% if messages %}
                 {% for category, message in messages %}
@@ -84,11 +84,7 @@
 
 
 
-
-
-
-
-
+        <!-- Go back to main page button -->
         <br/><br/><br/><br/>
         <div class="footer">
           <button type="button" class="btn btn-default"><a href="{{ url_for('main') }}">Back to Main Menu</a></button>

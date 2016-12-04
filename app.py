@@ -17,12 +17,15 @@ app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 app.config['SECRET_KEY'] = 'Secret String'
 mysql.init_app(app)
 
+
+#main page
 @app.route("/")
 def main():
     cnx = mysql.connect()
     cursor = cnx.cursor()
     return render_template('index.html')
 
+#main customer page
 @app.route('/customer', methods=['POST','GET'])
 def customerSearch():
 
@@ -62,22 +65,23 @@ def customerSearch():
 
 
 
-
+    #return the customer page with the rendered elements
     return render_template("customer.html", genre=returnGenre, date=returnDate, name=returnName, showing=returnShowing)
 
 
-
+#main page for customers who want to buy a ticket
 @app.route('/attendShowing', methods=['POST','GET'])
 def attendShowing():
     return render_template("attendShowing.html")
 
 
+#the buy ticket page after submitting a request
 @app.route('/buyTicket', methods=['POST','GET'])
 def buyTicket():
     cxn = mysql.connect()
     cursor = cxn.cursor()
 
-#query for first and last name
+    #query for first and last name
     cursor.execute('''SELECT CONCAT_WS(" ", FirstName, LastName) AS wholename FROM Customer''')
     name = cursor.fetchall()
     returnName = []
@@ -85,58 +89,61 @@ def buyTicket():
         returnName.append(i)
 
 
-#query for showings
+    #query for showings
     cursor.execute('''SELECT CONCAT(Showing.ShowingDateTime,' ', Movie.MovieName) AS timeMovie FROM Showing INNER JOIN Movie ON Movie.idMovie=Showing.Movie_idMovie''')
     showings = cursor.fetchall()
     returnShowing = []
     for i in showings:
         returnShowing.append(i)
 
-
+    #get the customer selected values from the webpage
     selName = str(request.form.get('selectedName'))
     selShowing = str(request.form.get('selectedShowing'))
     temp = selShowing.split()
 
-
+    #if the customer is requesting to book a showing
     try:
         if request.method == 'POST':
+            #parse the full name to return just the first name to match with sql database/table
             firstName = selName.split()
             dateTime = temp[0] + " " + temp[1]
 
+            #get the customer id
             cursor.execute('''SELECT Customer.idCustomer FROM Customer WHERE Customer.FirstName=%s ''', (firstName[0]))
             customerId = cursor.fetchone()
             finalCustomerID = int(customerId[0])
 
+            #get the movie id
             cursor.execute('''SELECT Showing.idShowing FROM Showing INNER JOIN Movie ON Showing.Movie_idMovie=Movie.idMovie WHERE Showing.ShowingDateTime=%s''', (dateTime))
             movieId = cursor.fetchone()
             finalMovieId = int(movieId[0])
 
-            print finalMovieId
-            print finalCustomerID
-
+            #sql query to insert customer into the Attned table
             cursor.execute("INSERT INTO Attend (Customer_idCustomer, Showing_idShowing) VALUES (%s, %s)", (finalCustomerID, finalMovieId))
             cxn.commit()
             flash(selName + " successfully booked the " + temp[2] + " showing at " + temp[1] + " on " + temp[0])
 
+            #return the page with the submitted request
             return render_template("attendShowing.html", name=returnName, showing=returnShowing)
 
         else:
             return render_template("attendShowing.html", name=returnName, showing=returnShowing)
 
+    #catch any exceptions and return error message
     except Exception as e:
         flash(selName + " could not successfully book this showing")
         return render_template('attendShowing.html')
 
 
 
-
+#rate movie main page
 @app.route('/rateMovie', methods=['POST','GET'])
 def rateMovie():
     cxn = mysql.connect()
     cursor = cxn.cursor()
 
 
-#query for name
+    #query for name
     cursor.execute('''SELECT CONCAT_WS(" ", FirstName, LastName) AS wholename FROM Customer''')
     name = cursor.fetchall()
     returnName = []
@@ -144,7 +151,7 @@ def rateMovie():
         returnName.append(i)
 
 
-#query for showings
+    #query for showings
     cursor.execute('''SELECT CONCAT(Showing.ShowingDateTime,' ', Movie.MovieName) AS timeMovie FROM Showing INNER JOIN Movie ON Movie.idMovie=Showing.Movie_idMovie''')
     showings = cursor.fetchall()
     returnShowing = []
@@ -158,24 +165,24 @@ def rateMovie():
         rating = int(request.form.get('rating'))
 
         try:
+            #split name to get the firstname to match with sql database
             firstName = attendName.split()
             dateTime = temp[0] + " " + temp[1]
 
+            #find customer id
             cursor.execute('''SELECT Customer.idCustomer FROM Customer WHERE Customer.FirstName=%s ''', (firstName[0]))
             customerId = cursor.fetchone()
             finalCustomerID = int(customerId[0])
 
+            #find movie id
             cursor.execute('''SELECT Showing.idShowing FROM Showing INNER JOIN Movie ON Showing.Movie_idMovie=Movie.idMovie WHERE Showing.ShowingDateTime=%s''', (dateTime))
             movieId = cursor.fetchone()
             finalMovieId = int(movieId[0])
 
-            print finalMovieId
-            print finalCustomerID
-            print rating
 
-
+            #update the table with the new rating
             success = cursor.execute('''UPDATE Attend SET RATING=%s WHERE Customer_idCustomer=%s AND Showing_idShowing=%s''', (rating,finalCustomerID, finalMovieId))
-            print success
+
 
             if success == 0:
                 flash ("Sorry, you are unable to rate a showing you haven't seen.")
@@ -185,6 +192,7 @@ def rateMovie():
                 flash("You have successfully rated your showing.")
                 return render_template('rateMovie.html', name=returnName, showing=returnShowing)
 
+        #catch any exceptions and reply with an error message
         except Exception as e:
             flash("Sorry, unexpected error. Please go back to the main page")
             return render_template('rateMovie.html', name=returnName, showing=returnShowing)
@@ -196,7 +204,7 @@ def rateMovie():
 
 
 
-
+#main history page
 @app.route("/history", methods=['POST','GET'])
 def history():
 
@@ -204,7 +212,7 @@ def history():
     cursor = cxn.cursor()
 
 
-#query for name
+    #query for name
     cursor.execute('''SELECT CONCAT_WS(" ", FirstName, LastName) AS wholename FROM Customer''')
     name = cursor.fetchall()
     returnName = []
@@ -215,7 +223,7 @@ def history():
     return render_template("history.html", name=returnName)
 
 
-
+#after submit request, redirect customer to this page
 @app.route("/grabHistory", methods=['POST','GET'])
 def grabHistory():
 
@@ -223,7 +231,7 @@ def grabHistory():
     cursor = cxn.cursor()
 
 
-#query for name
+    #query for name
     cursor.execute('''SELECT CONCAT_WS(" ", FirstName, LastName) AS wholename FROM Customer''')
     name = cursor.fetchall()
     returnName = []
@@ -231,18 +239,18 @@ def grabHistory():
     for i in name:
         returnName.append(i)
 
-
+    #if the customer is posting, we need to do the necessary back end stuff with the sql database
     if request.method=='POST':
         attendName = str(request.form.get('attendName'))
-
+        #get the first name
         firstName = attendName.split()
 
-
+        #grab customer id
         cursor.execute('''SELECT Customer.idCustomer FROM Customer WHERE Customer.FirstName=%s''', (firstName[0]))
         customerId = cursor.fetchone()
         finalCustomerID = int(customerId[0])
 
-
+        #grab the customers history
         success = cursor.execute('''SELECT Attend.Rating, Movie.MovieName FROM Movie INNER JOIN Showing ON Movie.idMovie=Showing.Movie_idMovie INNER JOIN Attend ON Showing.idShowing=Attend.Showing_idShowing WHERE Attend.Customer_idCustomer=%s ''', (finalCustomerID))
         data=cursor.fetchall()
 
@@ -256,15 +264,12 @@ def grabHistory():
             flash("You have successfully viewed your history.")
             return render_template('history.html', name=returnName, data=data)
 
-#        except Exception as e:
-#            print (e)
-#            return render_template('history.html')
 
     else:
         return render_template('history.html', name=returnName)
 
 
-
+#main page for customer profile
 @app.route("/profile", methods=['POST','GET'])
 def profile():
 
@@ -272,7 +277,7 @@ def profile():
     cursor = cxn.cursor()
 
 
-#query for name
+    #query for name
     cursor.execute('''SELECT CONCAT_WS(" ", FirstName, LastName) AS wholename FROM Customer''')
     name = cursor.fetchall()
     returnName = []
@@ -284,7 +289,7 @@ def profile():
 
 
 
-
+#redirect page from the main profile page
 @app.route("/grabAll", methods=['POST','GET'])
 def grabAll():
 
@@ -292,7 +297,7 @@ def grabAll():
     cursor = cxn.cursor()
 
 
-#query for name
+    #query for name
     cursor.execute('''SELECT CONCAT_WS(" ", FirstName, LastName) AS wholename FROM Customer''')
     name = cursor.fetchall()
     returnName = []
@@ -300,18 +305,18 @@ def grabAll():
     for i in name:
         returnName.append(i)
 
-
+    #if the customer is posting, do the necessary back end sql queries
     if request.method=='POST':
         attendName = str(request.form.get('attendName'))
-
+        #grab first name
         firstName = attendName.split()
 
-
+        #get customer id
         cursor.execute('''SELECT Customer.idCustomer FROM Customer WHERE Customer.FirstName=%s''', (firstName[0]))
         customerId = cursor.fetchone()
         finalCustomerID = int(customerId[0])
 
-
+        #grab customer's profile information
         success = cursor.execute('''SELECT idCustomer, FirstName, LastName, EmailAddress, Sex FROM Customer WHERE idCustomer=%s ''', (finalCustomerID))
         data=cursor.fetchall()
 
@@ -325,26 +330,20 @@ def grabAll():
             flash("You have successfully viewed your history.")
             return render_template('profile.html', name=returnName, data=data)
 
-#        except Exception as e:
-#            print (e)
-#            return render_template('history.html')
 
     else:
         return render_template('profile.html', name=returnName)
 
 
 
-
+#main page for sql injection
 @app.route("/sqlInjection", methods=['POST','GET'])
 def sqlInjection():
-
-
-
     return render_template("sqlInjection.html")
 
 
 
-
+#sql injection
 @app.route("/sqlInjected", methods=['POST','GET'])
 def sqlInjected():
 
@@ -352,11 +351,11 @@ def sqlInjected():
     cursor = cxn.cursor()
 
 
-
+    #if the customer is posting, do appropriate actions
     if request.method=='POST':
         attendName = str(request.form.get('searchQuery'))
-        print attendName
 
+        #add the customer input to the sql query string
         success = cursor.execute("SELECT idCustomer, FirstName, LastName, EmailAddress, Sex FROM Customer WHERE idCustomer= '%s'; " % attendName)
         data=cursor.fetchall()
 
@@ -380,7 +379,7 @@ def sqlInjected():
 
 
 
-
+#main advanced search page
 @app.route("/search", methods=['POST','GET'])
 def search():
     cxn = mysql.connect()
@@ -405,12 +404,12 @@ def search():
 
 
 
-
+    #return the advance search page with the rendered elements
     return render_template("advSearch.html", searchGenre=returnGenre, date=returnDate)
 
 
 
-
+#redirect page from the main advanced search page
 @app.route("/searched", methods=['POST','GET'])
 def searched():
     cxn = mysql.connect()
@@ -435,8 +434,9 @@ def searched():
 
 
 
-
+    #if customer is posting their selections, take appropriate actions
     if request.method=='POST':
+        #grab the user selections from the html page
         genre = str(request.form.get('searchGenre'))
         startDate = str(request.form.get('startDate'))
         endDate = str(request.form.get('endDate'))
@@ -448,12 +448,12 @@ def searched():
         searchRequired = str(request.form.get('searchRequired'))
         seatRequired = str(request.form.get('seatRequired'))
 
-        print searchQuery
 
+        #setup views for checking availability for movies and their respective theatre capacities
         cursor.execute("CREATE OR REPLACE VIEW avail AS SELECT Showing_idShowing, Count(*) AS count FROM Attend JOIN Showing ON Attend.Showing_idShowing = Showing.idShowing GROUP BY Showing_idShowing;")
         cursor.execute("CREATE OR REPLACE VIEW avail2 AS SELECT idShowing, capacity FROM Showing JOIN theatreRoom ON Showing.TheatreRoom_RoomNumber = TheatreRoom.RoomNumber;")
 
-
+        #set up sql queries for different selected search criteria
         baseSql = "SELECT Movie.MovieName, Showing.ShowingDateTime FROM Movie INNER JOIN Showing ON Movie.idMovie=Showing.Movie_idMovie INNER JOIN Genre ON Showing.Movie_idMovie=Genre.Movie_idMovie WHERE"
         genreSql = "Genre.Genre=\'%s\'" % genre
         dateSql = "Showing.ShowingDateTime>=\'%s\' AND Showing.ShowingDateTime<=\'%s\'" % (startDate,endDate)
@@ -461,7 +461,7 @@ def searched():
         searchSQL = "Movie.MovieName=\'%s\'" % searchQuery
 
 
-
+        #check the search criteria
         if genreRequired<>"no":
             baseSql = baseSql + " " + genreSql
 
@@ -473,11 +473,13 @@ def searched():
 
         if searchRequired<>"no":
             baseSql = baseSql + " AND " + searchSQL
-        print baseSql
 
 
-        #massive compiled search
+
+        #execute massive compiled search
         success = cursor.execute(baseSql)
+
+        #grab the returned data
         data=cursor.fetchall()
 
 
@@ -572,7 +574,6 @@ def displayMovie():
     cursor.execute(insertFunc)
     result = cursor.fetchall()
     cnx.close()
-    print result
     return render_template('/staffComponents/displayMovie.html', data=result)
 
 if __name__ == "__main__":

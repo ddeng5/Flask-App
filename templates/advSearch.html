@@ -86,7 +86,7 @@
               <label><input name="seatRequired" type="checkbox" value="yes"> Only look for showings with available seats?</label>
             </div>
 
-
+            <!-- Search by movie title -->
             <br/><br/></br></br>
             <div class=form-group>
               <p>
@@ -109,7 +109,7 @@
 
 
 
-
+<!-- Show all the output data -->
             <br/><br/><br/>
             <div class="container">
               <table class="table table-striped">
@@ -127,7 +127,7 @@
               <br /><br />
               <button id="bookingSub" class="btn btn-default">Search</button>
 
-
+<!-- return any backend feedback messages -->
               {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                   {% for category, message in messages %}

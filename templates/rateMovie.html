@@ -37,7 +37,7 @@
 
 
           <form class="form-inline" method="POST" action="rateMovie">
-
+<!--  Select name of the customer -->
             <div class="form-group">
               <label for="attendName">Select Name:</label>
 
@@ -48,6 +48,7 @@
                     </select>
             </div>
 
+<!-- Select the showing of the customer -->
             <div class="form-group">
               <label for="attendShowing">Select Showing:</label>
 
@@ -58,6 +59,7 @@
                     </select>
             </div>
 
+<!-- Input the desired rating from the customer -->
             <div class="form-group">
               <label for="rating">Rating:</label>
                 <select class="form-control" name="rating">
@@ -74,7 +76,7 @@
               <br /><br />
               <button id="bookingSub" class="btn btn-default">Rate</button>
 
-
+<!-- Out put any feedback messages from back end -->
               {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                   {% for category, message in messages %}
@@ -102,7 +104,7 @@
 
 
 
-
+        <!-- Go back to main page button -->
         <br/><br/><br/><br/>
         <div class="footer">
           <button type="button" class="btn btn-default"><a href="{{ url_for('main') }}">Back to Main Menu</a></button>

@@ -36,10 +36,10 @@
 
 
           <form class="form-inline" method="POST" action="buyTicket">
-
+<!-- Select customer name -->
             <div class="form-group">
               <label for="selectedName">Select Name:</label>
-
+                    <!-- Shows all the available customer names from database -->
                     <select class="form-control" name="selectedName">
                       {% for each in name %}
                         <option><a href="#">{{each[0]}}</a></option>
@@ -49,10 +49,10 @@
 
             <br /><br/><b />
 
-
+<!-- let the customer select a showing -->
             <div class="form-group">
               <label for="selectedShowing">Select Showing:</label>
-
+                    <!-- shwo the customer all the available showings -->
                     <select class="form-control" name="selectedShowing">
                       {% for each in showing %}
                         <option><a href="#">{{each[0]}}</a></option>
@@ -64,7 +64,7 @@
           <button id="bookingSub" class="btn btn-default">Buy Now</button>
 
 
-
+<!-- output backend feedback messages -->
               {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                   {% for category, message in messages %}
