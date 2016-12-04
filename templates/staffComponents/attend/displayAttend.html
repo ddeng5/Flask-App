@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Display Attendances</title>
+    <link href="http://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="http://getbootstrap.com/examples/jumbotron-narrow/jumbotron-narrow.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="header">
+            <nav>
+                <ul class="nav nav-pills pull-right">
+                    <li role="presentation" class="active"><a href="/customer">Customer</a>
+                    </li>
+                    <li role="presentation" class="active"><a href="/staff">Staff</a>
+                    </li>                    
+                </ul>
+            </nav>
+            <h3 class="text-muted">Star Movie Theatre</h3>
+        </div>
+        <h1 style="margin-left:50px">Display Attendances</h1>
+        <br>
+		<div class="panel panel-default">
+  			<!-- Table -->
+ 			<table class="table">
+ 				<thead>
+ 					<tr>
+ 						<th>Customer ID</th>
+ 						<th>Showing ID</th>
+                        <th>Rating</th>
+ 					</tr>
+ 				</thead>
+ 				<tbody>
+    			{% for attend in data %}
+    				<tr>
+    					<td>{{ attend.0 }}</td>
+    					<td>{{ attend.1 }}</td>
+                        <td>{{ attend.2 }}</td>
+    				</tr>
+				{% endfor %}
+				</tbody>
+  			</table>
+		</div>
+	</div>
+</body>
