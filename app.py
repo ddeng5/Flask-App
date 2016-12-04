@@ -5,6 +5,7 @@ from flask import Flask, render_template, request, json, jsonify, flash, session
 
 from datetime import datetime
 import mysql.connector
+import base64
 app = Flask(__name__)
 
 @app.route("/")
@@ -209,13 +210,14 @@ def displayAttend_page():
 #===============================[MOVIE]=================================
 
 #add movies
-@app.route('/addmovie', methods=['POST'])
+@app.route('/readfile', methods=['POST'])
 #def read_file(filename):
 #	with open(filename, 'rb') as f:
-#		poster = f.read()
+#		poster = base64.decodestring(f.read())
 #	return poster
 
-def addMovie():	
+@app.route('/addmovie', methods=['POST'])
+def addMovie():
 	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
 	cursor = cnx.cursor()
 	insertFunc = (
@@ -226,14 +228,18 @@ def addMovie():
 	cursor.execute(insertFunc, data)
 	cnx.commit()
 	cnx.close()
-	print request.form['poster']
 
 	#if(request.form['poster'] is not None):
-	#	posterUpload = ("UPDATE Movie SET poster = %s WHERE idMovie = request.form['movieID']"
+	#	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
+	#	cursor = cnx.cursor()
+		#posterUpload = ("UPDATE Movie SET poster = %s WHERE idMovie = %s"
 	#		)
-	#	posterimg = request.form['poster']
-	#	data = (read_file(posterimg), request.form['movieID'])
-	#	cursor.execute(insertFunc, data)
+		#posterimg = read_file(request.form['poster'])
+		#images have to be uploaded to the templates/staffComponents/movie/posters folder
+		#posterimg = read_file('/vagrant/Flask-App/templates/staffComponents/movie/posters/Capture.PNG')
+		#print request.form['poster']
+		#data = (posterimg, request.form['movieID'])
+	#	cursor.execute(posterUpload, data)
 	#	cnx.commit()
 	#	cnx.close()
 	return render_template('/staffComponents/movie/addMovieForm.html')
@@ -285,18 +291,18 @@ def displayMovie():
 	insertFunc = ("SELECT * FROM Movie order by MovieName")
 	cursor.execute(insertFunc)
 	result = cursor.fetchall()
+	#for movie in result:
+	#	print movie[3]
+		#movie[3] = movie[3].decode('base64')
 	cnx.close()
 	return result 
+
+
 
 #===============================[GENRE]=================================
 
 #add genre
 @app.route('/addgenre', methods=['POST'])
-#def read_file(filename):
-#	with open(filename, 'rb') as f:
-#		poster = f.read()
-#	return poster
-
 def addGenre():	
 	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
 	cursor = cnx.cursor()
@@ -352,7 +358,7 @@ def addRoom():
 	cnx.close()
 	return render_template('/staffComponents/room/addRoomForm.html')
         
-#delete movies
+#delete room
 @app.route('/deleteroom', methods=['POST'])
 def deleteRoom():
 	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
@@ -366,7 +372,7 @@ def deleteRoom():
 	cnx.close()
 	return render_template('/staffComponents/room/deleteRoomForm.html')
 
-#modify movies
+#modify rooms
 @app.route('/updateroom', methods=['POST'])
 def updateRoom():
 	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
@@ -380,7 +386,7 @@ def updateRoom():
 	cnx.close()
 	return render_template('/staffComponents/room/updateRoomForm.html')
 
-#list all movies and all attributes sorted alphabetically by movie name
+#list all rooms and all attributes
 @app.route('/displayRoom', methods=['POST','GET'])
 def displayRoom():
 	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
@@ -464,7 +470,7 @@ def addCustomer():
 	cnx.close()
 	return render_template('/staffComponents/customer/addCustomerForm.html')
         
-#delete movies
+#delete customer
 @app.route('/deletecustomer', methods=['POST'])
 def deleteCustomer():
 	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
@@ -478,7 +484,7 @@ def deleteCustomer():
 	cnx.close()
 	return render_template('/staffComponents/customer/deleteCustomerForm.html')
 
-#modify movies
+#modify customers
 @app.route('/updatecustomer', methods=['POST'])
 def updateCustomer():
 	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
@@ -492,7 +498,7 @@ def updateCustomer():
 	cnx.close()
 	return render_template('/staffComponents/customer/updateCustomerForm.html')
 
-#list all movies and all attributes sorted alphabetically by movie name
+#list all customers and all attributes
 @app.route('/displaycustomer', methods=['POST','GET'])
 def displayCustomer():
 	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
@@ -505,7 +511,7 @@ def displayCustomer():
 
 #===============================[ATTEND]=================================
 
-#list all movies and all attributes sorted alphabetically by movie name
+#list all attendances and all attributes sorted alphabetically by rating
 @app.route('/displayattend', methods=['POST','GET'])
 def displayAttend():
 	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
