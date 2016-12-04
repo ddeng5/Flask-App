@@ -2,10 +2,11 @@
 # -*- coding: utf-8 -*-
 
 from flask import Flask, render_template, request, json, jsonify, flash, session
-
 from datetime import datetime
 import mysql.connector
 import base64
+import os
+
 app = Flask(__name__)
 
 @app.route("/")
@@ -209,36 +210,47 @@ def displayAttend_page():
 
 #===============================[MOVIE]=================================
 
-#add movies
-@app.route('/readfile', methods=['POST'])
+#poster functions
+#@app.route('/readfile', methods=['POST'])
 #def read_file(filename):
 #	with open(filename, 'rb') as f:
-#		poster = base64.decodestring(f.read())
+#		poster = base64.encodestring(f.read())
 #	return poster
 
+#@app.route('/writefile', methods=['POST'])
+#def write_file(data, filename):
+#	with open(filename, 'rb') as f:
+#		poster = f.write(data)
+#	return poster
+
+#add movies
 @app.route('/addmovie', methods=['POST'])
 def addMovie():
+	#create connection
 	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
 	cursor = cnx.cursor()
+	#query to be passed to the database
 	insertFunc = (
 			"INSERT INTO Movie (MovieName, idMovie, movieYear)"
 			"VALUES (%s, %s, %s)"
 		)
+	#data to be used
 	data = (request.form['movieName'], request.form['movieID'], request.form['movieYear'])
+	#execution of the query
 	cursor.execute(insertFunc, data)
 	cnx.commit()
 	cnx.close()
 
+	#poster functions
 	#if(request.form['poster'] is not None):
 	#	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
 	#	cursor = cnx.cursor()
-		#posterUpload = ("UPDATE Movie SET poster = %s WHERE idMovie = %s"
+	#	posterUpload = ("UPDATE Movie SET poster = %s WHERE idMovie = %s"
 	#		)
-		#posterimg = read_file(request.form['poster'])
-		#images have to be uploaded to the templates/staffComponents/movie/posters folder
-		#posterimg = read_file('/vagrant/Flask-App/templates/staffComponents/movie/posters/Capture.PNG')
-		#print request.form['poster']
-		#data = (posterimg, request.form['movieID'])
+	#	posterimg = read_file(request.form['poster'])
+	#	images have to be uploaded to the templates/staffComponents/movie/posters folder
+	#	posterimg = read_file('/vagrant/Flask-App/templates/staffComponents/movie/posters/Capture.PNG')
+	#	data = (posterimg, request.form['movieID'])
 	#	cursor.execute(posterUpload, data)
 	#	cnx.commit()
 	#	cnx.close()
@@ -247,9 +259,11 @@ def addMovie():
 #delete movies
 @app.route('/deletemovie', methods=['POST'])
 def deleteMovie():
+	#open connection
 	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
 	cursor = cnx.cursor()
 	data = (request.form['movieID'])
+	#delete query
 	insertFunc = (
 		"DELETE FROM Movie WHERE idMovie = '%s'; "%data
 		)
@@ -261,6 +275,7 @@ def deleteMovie():
 #modify movies
 @app.route('/updatemovie', methods=['POST'])
 def updateMovie():
+	#separate queries for the movie name and movie year
 	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
 	cursor = cnx.cursor()
 	insertFunc = (
@@ -291,25 +306,32 @@ def displayMovie():
 	insertFunc = ("SELECT * FROM Movie order by MovieName")
 	cursor.execute(insertFunc)
 	result = cursor.fetchall()
+	#display poster
 	#for movie in result:
+	#	if movie[3] is not None:
+	#		img = movie[3]
+	#		missing_padding = len(img) % 4
+	#		if missing_padding != 0:
+	#			img += b'='*(4-missing_padding)
+	#			movie[3] = base64.decodestring(img)
+	#			cnx.close()
 	#	print movie[3]
-		#movie[3] = movie[3].decode('base64')
-	cnx.close()
 	return result 
-
-
 
 #===============================[GENRE]=================================
 
 #add genre
 @app.route('/addgenre', methods=['POST'])
-def addGenre():	
+def addGenre():
+	#open connection	
 	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
 	cursor = cnx.cursor()
+	#MySQL query
 	insertFunc = (
 			"INSERT INTO Genre (Genre, Movie_idMovie)"
 			"VALUES (%s, %s)"
 		)
+	#data to be passed
 	data = (request.form['genre'], request.form['movieID'])
 	cursor.execute(insertFunc, data)
 	cnx.commit()
@@ -337,6 +359,7 @@ def displayGenre():
 	cursor = cnx.cursor()
 	insertFunc = ("SELECT Genre, idMovie, MovieName FROM Genre JOIN Movie ON Movie.idMovie = Genre.Movie_idMovie ORDER BY Genre")
 	cursor.execute(insertFunc)
+	#gets all data and returns an array
 	result = cursor.fetchall()
 	cnx.close()
 	return result
@@ -345,13 +368,16 @@ def displayGenre():
 
 #add rooms
 @app.route('/addroom', methods=['POST'])
-def addRoom():	
+def addRoom():
+	#open connection	
 	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
 	cursor = cnx.cursor()
+	#query
 	insertFunc = (
 			"INSERT INTO TheatreRoom (RoomNumber, Capacity)"
 			"VALUES (%s, %s)"
 		)
+	#data
 	data = (request.form['roomNumber'], request.form['capacity'])
 	cursor.execute(insertFunc, data)
 	cnx.commit()
@@ -361,9 +387,12 @@ def addRoom():
 #delete room
 @app.route('/deleteroom', methods=['POST'])
 def deleteRoom():
+	#open connection
 	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
 	cursor = cnx.cursor()
+	#data
 	data = (request.form['roomNumber'])
+	#query
 	insertFunc = (
 		"DELETE FROM TheatreRoom WHERE roomNumber = '%s'; "%data
 		)
@@ -375,11 +404,14 @@ def deleteRoom():
 #modify rooms
 @app.route('/updateroom', methods=['POST'])
 def updateRoom():
+	#open connection
 	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
 	cursor = cnx.cursor()
+	#query
 	insertFunc = (
 		"UPDATE TheatreRoom SET Capacity = %s WHERE RoomNumber = %s"
 	)
+	#data
 	data = (request.form['capacity'], request.form['roomNumber'])
 	cursor.execute(insertFunc, data)
 	cnx.commit()
@@ -393,6 +425,7 @@ def displayRoom():
 	cursor = cnx.cursor()
 	insertFunc = ("SELECT * FROM TheatreRoom")
 	cursor.execute(insertFunc)
+	#return an array
 	result = cursor.fetchall()
 	cnx.close()
 	return result 
@@ -402,12 +435,15 @@ def displayRoom():
 #add showings
 @app.route('/addshowing', methods=['POST'])
 def addShowing():	
+	#open conneciton
 	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
 	cursor = cnx.cursor()
+	#query
 	insertFunc = (
 			"INSERT INTO Showing (idShowing, ShowingDateTime, Movie_idMovie,TheatreRoom_RoomNumber, TicketPrice)"
 			"VALUES (%s, %s, %s, %s, %s)"
 		)
+	#data
 	data = (request.form['showingID'], request.form['showTime'], request.form['movieID'], request.form['roomNumber'], request.form['ticketPrice'])
 	cursor.execute(insertFunc, data)
 	cnx.commit()
@@ -417,9 +453,12 @@ def addShowing():
 #delete showings
 @app.route('/deleteshowing', methods=['POST'])
 def deleteShowing():
+	#open connection
 	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
 	cursor = cnx.cursor()
+	#data
 	data = (request.form['showingID'])
+	#query
 	insertFunc = (
 		"DELETE FROM Showing WHERE idShowing = '%s'; "%data
 		)
@@ -431,11 +470,14 @@ def deleteShowing():
 #modify showings
 @app.route('/updateshowing', methods=['POST'])
 def updateShowing():
+	#open connection
 	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
 	cursor = cnx.cursor()
+	#query
 	insertFunc = (
 		"UPDATE Showing SET ShowingDateTime = %s, Movie_idMovie = %s,TheatreRoom_RoomNumber = %s, TicketPrice = %s WHERE idShowing = %s"
 	)
+	#data
 	data = (request.form['showTime'], request.form['movieID'], request.form['roomNumber'], request.form['ticketPrice'], request.form['showingID'])
 	cursor.execute(insertFunc, data)
 	cnx.commit()
@@ -445,10 +487,13 @@ def updateShowing():
 #list all showings and all attributes sorted alphabetically by movie name
 @app.route('/displayshowing', methods=['POST','GET'])
 def displayShowing():
+	#open connection
 	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
 	cursor = cnx.cursor()
+	#query
 	insertFunc = ("SELECT * FROM Showing")
 	cursor.execute(insertFunc)
+	#return array
 	result = cursor.fetchall()
 	cnx.close()
 	return result 
@@ -458,12 +503,15 @@ def displayShowing():
 #add customers
 @app.route('/addcustomer', methods=['POST'])
 def addCustomer():	
+	#open connection
 	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
 	cursor = cnx.cursor()
+	#query
 	insertFunc = (
 			"INSERT INTO Customer (idCustomer, FirstName, LastName, EmailAddress, Sex)"
 			"VALUES (%s, %s, %s, %s, %s)"
 		)
+	#data
 	data = (request.form['customerID'], request.form['fname'], request.form['lname'], request.form['email'], request.form['sex'])
 	cursor.execute(insertFunc, data)
 	cnx.commit()
@@ -473,9 +521,12 @@ def addCustomer():
 #delete customer
 @app.route('/deletecustomer', methods=['POST'])
 def deleteCustomer():
+	#open connection
 	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
 	cursor = cnx.cursor()
+	#data
 	data = (request.form['customerID'])
+	#query
 	insertFunc = (
 		"DELETE FROM Customer WHERE idCustomer = '%s'; "%data
 		)
@@ -487,11 +538,14 @@ def deleteCustomer():
 #modify customers
 @app.route('/updatecustomer', methods=['POST'])
 def updateCustomer():
+	#open connection
 	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
 	cursor = cnx.cursor()
+	#query
 	insertFunc = (
 		"UPDATE Customer SET FirstName = %s, LastName = %s, EmailAddress = %s, Sex = %s WHERE idCustomer = %s"
 	)
+	#data
 	data = (request.form['fname'], request.form['lname'], request.form['email'], request.form['sex'], request.form['customerID'])
 	cursor.execute(insertFunc, data)
 	cnx.commit()
@@ -505,6 +559,7 @@ def displayCustomer():
 	cursor = cnx.cursor()
 	insertFunc = ("SELECT * FROM Customer")
 	cursor.execute(insertFunc)
+	#return array
 	result = cursor.fetchall()
 	cnx.close()
 	return result
@@ -516,6 +571,7 @@ def displayCustomer():
 def displayAttend():
 	cnx = mysql.connector.connect(user='root', database='MovieTheatre')
 	cursor = cnx.cursor()
+	#joins customer, showing, movie, and returns the required columns
 	insertFunc = ("SELECT Rating, Customer_idCustomer, Showing_idShowing, FirstName, LastName, ShowingDateTime, MovieName, idMovie FROM Attend JOIN Customer ON Attend.Customer_idCustomer = Customer.idCustomer JOIN Showing ON Attend.Showing_idShowing = Showing.idShowing JOIN Movie ON Showing.Movie_idMovie = Movie.idMovie ORDER BY Rating")
 	cursor.execute(insertFunc)
 	result = cursor.fetchall()
