@@ -19,7 +19,7 @@
 					<li role="presentation" class="active"><a href="/customer">Customer</a>
 					</li>
 					<li role="presentation" class="active"><a href="/staff">Staff</a>
-					</li>                    
+					</li>
 				</ul>
 			</nav>
 			<h3 class="text-muted">Star Movie Theatre</h3>
@@ -46,5 +46,17 @@
 			<input class="btn btn-default" type="submit" value="Submit">
 			<br>
 		</form>
+
+
+		{% with messages = get_flashed_messages(with_categories=true) %}
+			{% if messages %}
+				{% for category, message in messages %}
+					<div class="alert alert-{{ category }} alert-dismissible" role="alert">
+					<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						{{ message }}
+					</div>
+				{% endfor %}
+			{% endif %}
+		{% endwith %}
 	</div>
 </body>

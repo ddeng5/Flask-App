@@ -16,7 +16,7 @@
                     <li role="presentation" class="active"><a href="/customer">Customer</a>
                     </li>
                     <li role="presentation" class="active"><a href="/staff">Staff</a>
-                    </li>                    
+                    </li>
                 </ul>
             </nav>
             <h3 class="text-muted">Star Movie Theatre</h3>
@@ -30,12 +30,12 @@
  					<tr>
                         <th>Rating</th>
  						<th>Customer ID</th>
- 						<th>Showing ID</th>                        
+ 						<th>Showing ID</th>
                         <th>Customer First Name</th>
                         <th>Customer Last Name</th>
                         <th>Showing Time</th>
                         <th>Movie Name</th>
-                        <th>Movie ID</th>                                         
+                        <th>Movie ID</th>
  					</tr>
  				</thead>
  				<tbody>
@@ -54,5 +54,17 @@
 				</tbody>
   			</table>
 		</div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
 	</div>
 </body>
